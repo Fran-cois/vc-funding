@@ -18,13 +18,38 @@ struct VCFundingApp: App {
         } label: {
             HStack(spacing: 5) {
                 Image(systemName: store.shouldSwitch ? "exclamationmark.triangle.fill" : "terminal")
-                Text(store.menuBarTitle)
-                    .monospacedDigit()
+                if let snapshot = store.snapshot(for: .codex) {
+                    if let fiveHour = snapshot.fiveHour {
+                        usageLabel("5h", window: fiveHour)
+                    }
+                    if snapshot.fiveHour != nil, snapshot.weekly != nil {
+                        Text("·").foregroundStyle(.secondary)
+                    }
+                    if let weekly = snapshot.weekly {
+                        usageLabel("7d", window: weekly)
+                    }
+                }
             }
             .onAppear { scheduler.start { await store.refresh() } }
         }
         .menuBarExtraStyle(.window)
 
         Settings { SettingsView() }
+    }
+
+    private func usageLabel(_ label: String, window: UsageWindow) -> some View {
+        HStack(spacing: 2) {
+            Text(label)
+            Text("\(window.roundedPercent)%")
+                .fontWeight(.semibold)
+                .foregroundStyle(usageColor(window.usedPercent))
+                .monospacedDigit()
+        }
+    }
+
+    private func usageColor(_ percent: Double) -> Color {
+        if percent >= 90 { return .red }
+        if percent >= 70 { return .orange }
+        return .green
     }
 }

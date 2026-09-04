@@ -19,8 +19,10 @@ final class UsageStore: ObservableObject {
 
     var menuBarTitle: String {
         let snapshot = snapshot(for: .codex)
-        guard let snapshot else { return "5h N/A  ·  7d N/A" }
-        return "5h \(percent(snapshot.fiveHour)) · 7d \(percent(snapshot.weekly))"
+        guard let snapshot else { return "" }
+        return [("5h", snapshot.fiveHour), ("7d", snapshot.weekly)]
+            .compactMap { label, window in window.map { "\(label) \(percent($0))" } }
+            .joined(separator: " · ")
     }
 
     var shouldSwitch: Bool {

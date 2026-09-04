@@ -89,10 +89,12 @@ struct MenuContentView: View {
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
-                Text(window.map { "\($0.roundedPercent)%" } ?? "N/A")
-                    .font(.title2.bold())
-                    .monospacedDigit()
-                    .foregroundStyle(window.map { usageColor($0.usedPercent) } ?? Color.secondary)
+                if let window {
+                    Text("\(window.roundedPercent)%")
+                        .font(.title2.bold())
+                        .monospacedDigit()
+                        .foregroundStyle(usageColor(window.usedPercent))
+                }
             }
 
             if let window {

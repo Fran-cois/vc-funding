@@ -20,7 +20,7 @@ $CODEX_HOME/sessions/**/*.jsonl
 
 (`CODEX_HOME` defaults to `~/.codex`.) These `token_count` events are written by Codex itself and include `used_percent`, `window_minutes`, and `resets_at`. The provider reads only recent tails of session files, identifies windows by duration (300 minutes and 10,080 minutes), and keeps the newest non-expired value for each window. It does not infer usage from tokens, inspect authentication state, invoke undocumented endpoints, or bypass authentication.
 
-Because this is a local event stream rather than a documented stable public API, a Codex update may change its schema. If the directory, fields, or a current window are unavailable, the menu bar shows `N/A` and the dropdown explains that there is no current value in local events. Opening or using Codex normally gives it a chance to write a fresh event.
+Because this is a local event stream rather than a documented stable public API, a Codex update may change its schema. If a current window is unavailable, it is omitted from the menu bar; the dropdown explains that there is no current value in local events. Opening or using Codex normally gives it a chance to write a fresh event.
 
 The `AgentUsageProvider` protocol keeps collection independent from the UI. Codex is implemented; the Claude Code tab is an explicit unconfigured state until a reliable local source is added. Other agents can be added as providers without changing the menu bar views.
 

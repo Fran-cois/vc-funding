@@ -38,5 +38,7 @@ struct UsageStoreTests {
 
         #expect(!store.shouldSwitch)
         #expect(store.switchReason(for: .codex) == nil)
+        #expect(store.menuBarTitle == "5h 89%")
+        #expect(!store.menuBarTitle.contains("N/A"))
     }
 }
