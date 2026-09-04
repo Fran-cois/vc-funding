@@ -10,7 +10,8 @@ All notable changes to **vc-funding** are documented here. Versions follow [Sema
 - Local Codex 5-hour and weekly usage parsing
 - Five-minute automatic refresh and manual refresh
 - Reset countdowns and launch-at-login support
-- Codex and Claude Code provider tabs
+- Codex, Claude Code, and Antigravity provider tabs
+- Documented safe-source limitation for Antigravity usage
 - Traffic-light usage indicators with unavailable windows omitted
 - Deduplicated **Time to switch coding agent** notifications at 90%
 - Deduplicated **Time to burn tokens** notifications before underused quota resets

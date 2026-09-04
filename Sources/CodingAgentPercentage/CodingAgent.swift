@@ -3,6 +3,7 @@ import Foundation
 enum CodingAgent: String, CaseIterable, Identifiable, Sendable {
     case codex = "Codex"
     case claudeCode = "Claude Code"
+    case antigravity = "Antigravity"
 
     var id: String { rawValue }
 }

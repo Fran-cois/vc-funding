@@ -98,4 +98,8 @@ struct UsageStoreTests {
         #expect(store.shouldSwitch)
         #expect(store.switchReason(for: .codex) == "7d usage is at 96%. Consider switching coding agent.")
     }
+
+    @Test func exposesAllSupportedAgentTabs() {
+        #expect(CodingAgent.allCases == [.codex, .claudeCode, .antigravity])
+    }
 }

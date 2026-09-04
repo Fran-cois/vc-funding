@@ -21,7 +21,7 @@
 - **Time to burn tokens** alert before unused quota resets
 - Deduplicated native macOS notifications
 - Launch at login
-- Provider tabs ready for Claude Code and future agents
+- Provider tabs for Codex, Claude Code, and Antigravity
 - No analytics, uploads, or credential access
 
 ## Install
@@ -74,6 +74,12 @@ rate_limits.seven_day.resets_at
 ```
 
 A future `ClaudeCodeUsageProvider` will read only those four values from a small local cache written by the status-line command. It will not inspect OAuth tokens, API keys, transcripts, prompts, or account details. Until that provider and opt-in setup are implemented, the Claude Code tab intentionally displays **not configured**.
+
+### How Antigravity data works
+
+Antigravity is available as a provider tab, but **vc-funding does not collect its usage yet**. Antigravity CLI officially exposes model quotas through its interactive [`/usage` (`/quota`) panel](https://www.antigravity.google/docs/cli/commands/usage/). Opening that panel refreshes quota state from its backend and local disk.
+
+The official documentation does not currently describe a stable machine-readable quota command or local quota-file schema. Therefore vc-funding does not scrape the TUI, invoke private endpoints, or inspect Google credentials. The Antigravity tab intentionally displays **not configured** until Google documents a safe structured source.
 
 ## Alerts
 

@@ -8,7 +8,8 @@ struct VCFundingApp: App {
     init() {
         _store = StateObject(wrappedValue: UsageStore(providers: [
             CodexUsageProvider(),
-            UnavailableAgentUsageProvider(agentName: CodingAgent.claudeCode.rawValue)
+            UnavailableAgentUsageProvider(agentName: CodingAgent.claudeCode.rawValue),
+            UnavailableAgentUsageProvider(agentName: CodingAgent.antigravity.rawValue)
         ], notifier: SwitchNotificationManager()))
     }
 

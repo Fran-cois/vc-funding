@@ -25,7 +25,10 @@ struct MenuContentView: View {
 
             Picker("Coding agent", selection: $selectedAgent) {
                 ForEach(CodingAgent.allCases) { agent in
-                    Text(agent.rawValue).tag(agent)
+                    Text(agent.rawValue)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                        .tag(agent)
                 }
             }
             .pickerStyle(.segmented)
@@ -183,6 +186,7 @@ private struct InfoPopoverView: View {
 
             Label("Reads local Codex session events only", systemImage: "folder")
             Label("Claude Code status-line sync: not configured", systemImage: "link.badge.plus")
+            Label("Antigravity quota sync: not configured", systemImage: "link.badge.plus")
             Label("No credentials, analytics, or uploads", systemImage: "lock.shield")
 
             Divider()
