@@ -19,6 +19,7 @@ struct UsageSnapshot: Equatable, Sendable {
 enum UsageProviderError: LocalizedError, Equatable {
     case sessionsDirectoryMissing
     case noUsageData
+    case unsupportedAgent(String)
 
     var errorDescription: String? {
         switch self {
@@ -26,6 +27,8 @@ enum UsageProviderError: LocalizedError, Equatable {
             "Codex session storage was not found. Run Codex and try again."
         case .noUsageData:
             "No current Codex usage snapshot is available yet."
+        case .unsupportedAgent(let name):
+            "\(name) usage is not configured yet."
         }
     }
 }

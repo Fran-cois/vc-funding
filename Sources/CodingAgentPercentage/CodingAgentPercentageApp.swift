@@ -6,7 +6,10 @@ struct VCFundingApp: App {
     private let scheduler = RefreshScheduler()
 
     init() {
-        _store = StateObject(wrappedValue: UsageStore(provider: CodexUsageProvider()))
+        _store = StateObject(wrappedValue: UsageStore(providers: [
+            CodexUsageProvider(),
+            UnavailableAgentUsageProvider(agentName: CodingAgent.claudeCode.rawValue)
+        ]))
     }
 
     var body: some Scene {
@@ -14,7 +17,7 @@ struct VCFundingApp: App {
             MenuContentView(store: store)
         } label: {
             HStack(spacing: 5) {
-                Image(systemName: "terminal")
+                Image(systemName: store.shouldSwitch ? "exclamationmark.triangle.fill" : "terminal")
                 Text(store.menuBarTitle)
                     .monospacedDigit()
             }

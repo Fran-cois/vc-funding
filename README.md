@@ -6,7 +6,7 @@ A private, native macOS menu bar app that shows whether Codex still has enough "
 〉_ 5h 42% · 7d 68%
 ```
 
-The dropdown shows each available usage window, its reset countdown, the last refresh time, and a manual refresh action. It refreshes automatically every five minutes and can register itself to launch at login.
+The dropdown has one tab per coding agent, shows each available usage window, its reset countdown, the last refresh time, and a manual refresh action. It refreshes automatically every five minutes and can register itself to launch at login. A red warning recommends switching agents when a Codex window reaches 90%.
 
 ## Privacy and data source
 
@@ -22,7 +22,7 @@ $CODEX_HOME/sessions/**/*.jsonl
 
 Because this is a local event stream rather than a documented stable public API, a Codex update may change its schema. If the directory, fields, or a current window are unavailable, the menu bar shows `N/A` and the dropdown explains that there is no current value in local events. Opening or using Codex normally gives it a chance to write a fresh event.
 
-The `AgentUsageProvider` protocol keeps collection independent from the UI, so Claude Code and other agents can be added as new providers without changing the menu bar views.
+The `AgentUsageProvider` protocol keeps collection independent from the UI. Codex is implemented; the Claude Code tab is an explicit unconfigured state until a reliable local source is added. Other agents can be added as providers without changing the menu bar views.
 
 ## Requirements
 

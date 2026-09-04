@@ -3,6 +3,7 @@ import SwiftUI
 
 struct MenuContentView: View {
     @ObservedObject var store: UsageStore
+    @State private var selectedAgent = CodingAgent.codex
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -11,7 +12,7 @@ struct MenuContentView: View {
                     .foregroundStyle(.tint)
                 VStack(alignment: .leading, spacing: 0) {
                     Text("VC funding").font(.headline)
-                    Text("Codex usage")
+                    Text("\(selectedAgent.rawValue) usage")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -21,18 +22,36 @@ struct MenuContentView: View {
                 }
             }
 
-            usageCard("5-hour window", shortTitle: "5h", window: store.snapshot?.fiveHour)
-            usageCard("Weekly window", shortTitle: "7d", window: store.snapshot?.weekly)
+            Picker("Coding agent", selection: $selectedAgent) {
+                ForEach(CodingAgent.allCases) { agent in
+                    Text(agent.rawValue).tag(agent)
+                }
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+
+            if let reason = store.switchReason(for: selectedAgent) {
+                Label(reason, systemImage: "exclamationmark.triangle.fill")
+                    .font(.callout.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(.red.gradient, in: RoundedRectangle(cornerRadius: 9))
+            }
+
+            let snapshot = store.snapshot(for: selectedAgent)
+            usageCard("5-hour window", shortTitle: "5h", window: snapshot?.fiveHour)
+            usageCard("Weekly window", shortTitle: "7d", window: snapshot?.weekly)
 
             Divider()
             Label {
-                detailRow("Last refresh", value: store.snapshot.map { Self.relativeText(for: $0.refreshedAt) } ?? "Never")
+                detailRow("Last refresh", value: snapshot.map { Self.relativeText(for: $0.refreshedAt) } ?? "Never")
             } icon: {
                 Image(systemName: "arrow.clockwise")
                     .foregroundStyle(.secondary)
             }
 
-            if let error = store.errorMessage {
+            if let error = store.errorMessage(for: selectedAgent) {
                 Text(error)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -85,7 +104,7 @@ struct MenuContentView: View {
             } else {
                 ProgressView(value: 0, total: 100)
                     .tint(.secondary)
-                Text("No current value in local Codex events")
+                Text("No current value for \(selectedAgent.rawValue)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
