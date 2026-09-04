@@ -92,4 +92,4 @@ The suite currently covers parsing, filesystem discovery, expired windows, displ
 
 ## License
 
-No license is included. The source is publicly visible, but no reuse rights are granted by default.
+[MIT](LICENSE) © 2026 Fran-cois.

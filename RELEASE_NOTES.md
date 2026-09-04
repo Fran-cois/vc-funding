@@ -8,6 +8,7 @@ The first private-by-design release of **vc-funding** puts coding-agent runway d
 - Get a clear red warning and one native notification when it is time to switch providers.
 - Get a 🔥 reminder when unused quota is close to resetting.
 - Keep every credential and usage event on the Mac; the app makes no network requests.
+- Use, modify, and redistribute the project under the MIT license.
 - Install from a GitHub release archive or a Homebrew Cask once its tap is connected.
 
 ## Requirements
