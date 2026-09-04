@@ -8,6 +8,7 @@
   },
   "files": [
     "bin/",
+    "docs/",
     "Sources/",
     "Tests/",
     "scripts/build-app.sh",

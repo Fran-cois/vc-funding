@@ -8,6 +8,13 @@
 
 **vc-funding** is a private, native macOS menu bar app for checking coding-agent usage without opening a dashboard. Percentages use traffic-light colors, unavailable windows stay out of the menu bar, and a warning tells you when it may be time to switch agents.
 
+![vc-funding in the macOS menu bar](docs/screenshots/menu-bar.png)
+
+<p align="center">
+  <img src="docs/screenshots/usage-dropdown.png" alt="Codex usage dropdown" width="46%">
+  <img src="docs/screenshots/switch-alert.png" alt="Switch provider warning" width="46%">
+</p>
+
 ## What it does
 
 - Shows current 5-hour and weekly Codex usage in the menu bar
@@ -152,6 +159,13 @@ To add an agent, implement `AgentUsageProvider`, return a `UsageSnapshot`, regis
 ## Tests
 
 The Swift Testing suite covers parsing, malformed input, newest-event selection, expired windows, percentage clamping, display formatting without `N/A`, switch-alert and notification boundaries, independent multi-provider results, and filesystem discovery through a temporary Codex session tree.
+
+Demo screenshots are rendered deterministically from SwiftUI, without account data:
+
+```sh
+swiftc -parse-as-library scripts/render-demo-screenshots.swift -o /tmp/render-vc-funding
+/tmp/render-vc-funding docs/screenshots
+```
 
 ## License
 
