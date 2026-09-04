@@ -6,13 +6,22 @@ final class UsageStore: ObservableObject {
     @Published private(set) var snapshots: [String: UsageSnapshot] = [:]
     @Published private(set) var errors: [String: String] = [:]
     @Published private(set) var isRefreshing = false
+    @Published private(set) var availableAgents: [CodingAgent]
 
     private let providers: [any AgentUsageProvider]
     private let notifier: (any SwitchAlertNotifier)?
+    private let detectAgents: @Sendable () -> [CodingAgent]
 
-    init(providers: [any AgentUsageProvider], notifier: (any SwitchAlertNotifier)? = nil) {
+    init(
+        providers: [any AgentUsageProvider],
+        notifier: (any SwitchAlertNotifier)? = nil,
+        detectAgents: (@Sendable () -> [CodingAgent])? = nil
+    ) {
         self.providers = providers
         self.notifier = notifier
+        let providerAgents = providers.compactMap { CodingAgent(rawValue: $0.agentName) }
+        self.detectAgents = detectAgents ?? { providerAgents }
+        self.availableAgents = self.detectAgents()
     }
 
     convenience init(provider: any AgentUsageProvider) {
@@ -67,7 +76,12 @@ final class UsageStore: ObservableObject {
         guard !isRefreshing else { return }
         isRefreshing = true
         defer { isRefreshing = false }
-        for provider in providers {
+        availableAgents = detectAgents()
+        let detectedNames = Set(availableAgents.map(\.rawValue))
+        snapshots = snapshots.filter { detectedNames.contains($0.key) }
+        errors = errors.filter { detectedNames.contains($0.key) }
+
+        for provider in providers where detectedNames.contains(provider.agentName) {
             do {
                 let snapshot = try await provider.fetchUsage()
                 snapshots[provider.agentName] = snapshot

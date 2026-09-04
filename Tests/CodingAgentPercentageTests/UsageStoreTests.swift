@@ -102,4 +102,34 @@ struct UsageStoreTests {
     @Test func exposesAllSupportedAgentTabs() {
         #expect(CodingAgent.allCases == [.codex, .claudeCode, .antigravity])
     }
+
+    @Test func hidesProvidersWithoutLocalTraces() async {
+        let store = UsageStore(
+            providers: [
+                FixedUsageProvider(agentName: CodingAgent.codex.rawValue, fiveHourPercent: 10, weeklyPercent: 20),
+                FailingUsageProvider(agentName: CodingAgent.claudeCode.rawValue)
+            ],
+            detectAgents: { [.claudeCode] }
+        )
+        await store.refresh()
+
+        #expect(store.availableAgents == [.claudeCode])
+        #expect(store.snapshot(for: .codex) == nil)
+    }
+
+    @Test func supportsAnEmptyDetectedProviderList() async {
+        let store = UsageStore(
+            providers: [FixedUsageProvider(
+                agentName: CodingAgent.codex.rawValue,
+                fiveHourPercent: 10,
+                weeklyPercent: 20
+            )],
+            detectAgents: { [] }
+        )
+        await store.refresh()
+
+        #expect(store.availableAgents.isEmpty)
+        #expect(store.snapshots.isEmpty)
+        #expect(store.errors.isEmpty)
+    }
 }

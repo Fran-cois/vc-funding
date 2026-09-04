@@ -13,7 +13,7 @@ struct MenuContentView: View {
                     .foregroundStyle(.tint)
                 VStack(alignment: .leading, spacing: 0) {
                     Text("VC funding").font(.headline)
-                    Text("\(selectedAgent.rawValue) usage")
+                    Text(store.availableAgents.isEmpty ? "No providers detected" : "\(selectedAgent.rawValue) usage")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -23,50 +23,21 @@ struct MenuContentView: View {
                 }
             }
 
-            Picker("Coding agent", selection: $selectedAgent) {
-                ForEach(CodingAgent.allCases) { agent in
-                    Text(agent.rawValue)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.75)
-                        .tag(agent)
+            if store.availableAgents.isEmpty {
+                emptyState
+            } else {
+                Picker("Coding agent", selection: $selectedAgent) {
+                    ForEach(store.availableAgents) { agent in
+                        Text(agent.rawValue)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
+                            .tag(agent)
+                    }
                 }
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
+                .pickerStyle(.segmented)
+                .labelsHidden()
 
-            if let reason = store.switchReason(for: selectedAgent) {
-                Label(reason, systemImage: "exclamationmark.triangle.fill")
-                    .font(.callout.weight(.semibold))
-                    .foregroundStyle(.white)
-                    .padding(10)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(.red.gradient, in: RoundedRectangle(cornerRadius: 9))
-            } else if let reason = store.burnReason(for: selectedAgent) {
-                Label(reason, systemImage: "flame.fill")
-                    .font(.callout.weight(.semibold))
-                    .foregroundStyle(.white)
-                    .padding(10)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(.purple.gradient, in: RoundedRectangle(cornerRadius: 9))
-            }
-
-            let snapshot = store.snapshot(for: selectedAgent)
-            usageCard("5-hour window", shortTitle: "5h", window: snapshot?.fiveHour)
-            usageCard("Weekly window", shortTitle: "7d", window: snapshot?.weekly)
-
-            Divider()
-            Label {
-                detailRow("Last refresh", value: snapshot.map { Self.relativeText(for: $0.refreshedAt) } ?? "Never")
-            } icon: {
-                Image(systemName: "arrow.clockwise")
-                    .foregroundStyle(.secondary)
-            }
-
-            if let error = store.errorMessage(for: selectedAgent) {
-                Text(error)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                providerContent
             }
 
             HStack {
@@ -94,6 +65,68 @@ struct MenuContentView: View {
         }
         .padding(12)
         .frame(width: 320)
+        .onAppear { selectFirstAvailableAgent() }
+        .onChange(of: store.availableAgents) { _ in selectFirstAvailableAgent() }
+    }
+
+    @ViewBuilder
+    private var providerContent: some View {
+        if let reason = store.switchReason(for: selectedAgent) {
+            Label(reason, systemImage: "exclamationmark.triangle.fill")
+                .font(.callout.weight(.semibold))
+                .foregroundStyle(.white)
+                .padding(10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.red.gradient, in: RoundedRectangle(cornerRadius: 9))
+        } else if let reason = store.burnReason(for: selectedAgent) {
+                Label(reason, systemImage: "flame.fill")
+                    .font(.callout.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(.purple.gradient, in: RoundedRectangle(cornerRadius: 9))
+        }
+
+            let snapshot = store.snapshot(for: selectedAgent)
+            usageCard("5-hour window", shortTitle: "5h", window: snapshot?.fiveHour)
+            usageCard("Weekly window", shortTitle: "7d", window: snapshot?.weekly)
+
+            Divider()
+            Label {
+                detailRow("Last refresh", value: snapshot.map { Self.relativeText(for: $0.refreshedAt) } ?? "Never")
+            } icon: {
+                Image(systemName: "arrow.clockwise")
+                    .foregroundStyle(.secondary)
+            }
+
+            if let error = store.errorMessage(for: selectedAgent) {
+                Text(error)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 8) {
+            Text("💸")
+                .font(.system(size: 34))
+            Text("No VC funding found…")
+                .font(.headline)
+            Text("Open Codex, Claude Code, or Antigravity once, then refresh.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 18)
+    }
+
+    private func selectFirstAvailableAgent() {
+        guard !store.availableAgents.contains(selectedAgent),
+              let first = store.availableAgents.first else { return }
+        selectedAgent = first
     }
 
     private func usageCard(_ title: String, shortTitle: String, window: UsageWindow?) -> some View {

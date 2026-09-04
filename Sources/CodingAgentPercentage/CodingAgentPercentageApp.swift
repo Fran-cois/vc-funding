@@ -6,11 +6,14 @@ struct VCFundingApp: App {
     private let scheduler = RefreshScheduler()
 
     init() {
+        let traceDetector = LocalAgentTraceDetector()
         _store = StateObject(wrappedValue: UsageStore(providers: [
             CodexUsageProvider(),
             UnavailableAgentUsageProvider(agentName: CodingAgent.claudeCode.rawValue),
             UnavailableAgentUsageProvider(agentName: CodingAgent.antigravity.rawValue)
-        ], notifier: SwitchNotificationManager()))
+        ], notifier: SwitchNotificationManager(), detectAgents: {
+            traceDetector.detectedAgents()
+        }))
     }
 
     var body: some Scene {
