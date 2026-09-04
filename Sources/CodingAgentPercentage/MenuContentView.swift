@@ -193,6 +193,12 @@ private struct InfoPopoverView: View {
             if let error = login.errorMessage {
                 Text(error).foregroundStyle(.red)
             }
+
+            HStack {
+                Text("Version \(Self.appVersion)")
+                    .foregroundStyle(.secondary)
+                Spacer()
+            }
         }
         .font(.caption)
         .padding(14)
@@ -206,4 +212,8 @@ private struct InfoPopoverView: View {
             Text(meaning).foregroundStyle(.secondary)
         }
     }
+
+    private static let appVersion: String = {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development"
+    }()
 }

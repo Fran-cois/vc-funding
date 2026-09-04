@@ -27,6 +27,7 @@
 - Refreshes every five minutes, with a manual refresh button
 - Can launch automatically at login
 - Includes a compact `?` information popover in the dropdown
+- Shows the current app version in the information popover
 - Runs locally with no analytics, credential logging, or uploads
 
 ## Status at a glance
