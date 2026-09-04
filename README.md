@@ -21,7 +21,7 @@
 - **Time to burn tokens** alert before unused quota resets
 - Deduplicated native macOS notifications
 - Launch at login
-- Provider tabs for Codex, Claude Code, and Antigravity, shown only when local traces exist
+- Provider tabs for Codex, Claude Code, and Antigravity, shown only when usage data is available
 - Friendly empty state when no supported coding agent is detected
 - No analytics, uploads, or credential access
 
@@ -51,7 +51,7 @@ open .build/vc-funding.app
 
 ## Privacy and data source
 
-Provider discovery checks only whether known local app/session directories exist. It does not read credentials or send discovery data anywhere. Tabs appear automatically after vc-funding detects a local trace; if none exists, the menu displays **No VC funding found…**.
+Provider discovery checks only whether known local app/session directories exist. It does not read credentials or send discovery data anywhere. A tab appears only after its provider returns usable local usage data; an installed but unconfigured provider stays hidden. If none returns data, the menu displays **No VC funding found…**.
 
 vc-funding makes no network requests. It reads only Codex `token_count.rate_limits` events from:
 

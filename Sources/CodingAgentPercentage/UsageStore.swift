@@ -21,7 +21,7 @@ final class UsageStore: ObservableObject {
         self.notifier = notifier
         let providerAgents = providers.compactMap { CodingAgent(rawValue: $0.agentName) }
         self.detectAgents = detectAgents ?? { providerAgents }
-        self.availableAgents = self.detectAgents()
+        self.availableAgents = []
     }
 
     convenience init(provider: any AgentUsageProvider) {
@@ -76,21 +76,28 @@ final class UsageStore: ObservableObject {
         guard !isRefreshing else { return }
         isRefreshing = true
         defer { isRefreshing = false }
-        availableAgents = detectAgents()
-        let detectedNames = Set(availableAgents.map(\.rawValue))
+        let detectedAgents = detectAgents()
+        let detectedNames = Set(detectedAgents.map(\.rawValue))
         snapshots = snapshots.filter { detectedNames.contains($0.key) }
         errors = errors.filter { detectedNames.contains($0.key) }
+        var agentsWithUsage: [CodingAgent] = []
 
         for provider in providers where detectedNames.contains(provider.agentName) {
             do {
                 let snapshot = try await provider.fetchUsage()
                 snapshots[provider.agentName] = snapshot
                 errors[provider.agentName] = nil
+                if let agent = CodingAgent(rawValue: provider.agentName),
+                   snapshot.fiveHour != nil || snapshot.weekly != nil {
+                    agentsWithUsage.append(agent)
+                }
                 await notifier?.notifyIfNeeded(snapshot: snapshot)
             } catch {
+                snapshots[provider.agentName] = nil
                 errors[provider.agentName] = error.localizedDescription
             }
         }
+        availableAgents = agentsWithUsage
     }
 
     private func percent(_ window: UsageWindow?) -> String {

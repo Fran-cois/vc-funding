@@ -103,7 +103,7 @@ struct UsageStoreTests {
         #expect(CodingAgent.allCases == [.codex, .claudeCode, .antigravity])
     }
 
-    @Test func hidesProvidersWithoutLocalTraces() async {
+    @Test func hidesProvidersWithoutUsageEvenWhenTracesExist() async {
         let store = UsageStore(
             providers: [
                 FixedUsageProvider(agentName: CodingAgent.codex.rawValue, fiveHourPercent: 10, weeklyPercent: 20),
@@ -113,8 +113,22 @@ struct UsageStoreTests {
         )
         await store.refresh()
 
-        #expect(store.availableAgents == [.claudeCode])
+        #expect(store.availableAgents.isEmpty)
         #expect(store.snapshot(for: .codex) == nil)
+    }
+
+    @Test func showsOnlyProvidersReturningUsage() async {
+        let store = UsageStore(
+            providers: [
+                FixedUsageProvider(agentName: CodingAgent.codex.rawValue, fiveHourPercent: nil, weeklyPercent: 53),
+                FailingUsageProvider(agentName: CodingAgent.claudeCode.rawValue),
+                FailingUsageProvider(agentName: CodingAgent.antigravity.rawValue)
+            ],
+            detectAgents: { CodingAgent.allCases }
+        )
+        await store.refresh()
+
+        #expect(store.availableAgents == [.codex])
     }
 
     @Test func supportsAnEmptyDetectedProviderList() async {

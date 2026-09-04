@@ -11,7 +11,7 @@ All notable changes to **vc-funding** are documented here. Versions follow [Sema
 - Five-minute automatic refresh and manual refresh
 - Reset countdowns and launch-at-login support
 - Codex, Claude Code, and Antigravity provider tabs
-- Automatic provider discovery with a friendly empty state
+- Automatic provider discovery; tabs require usable usage data and otherwise fall back to a friendly empty state
 - Documented safe-source limitation for Antigravity usage
 - Traffic-light usage indicators with unavailable windows omitted
 - Deduplicated **Time to switch coding agent** notifications at 90%
