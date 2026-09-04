@@ -4,6 +4,7 @@ import SwiftUI
 struct MenuContentView: View {
     @ObservedObject var store: UsageStore
     @State private var selectedAgent = CodingAgent.codex
+    @State private var isShowingInfo = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -79,6 +80,16 @@ struct MenuContentView: View {
                 }
                 Spacer()
                 Button("Quit") { NSApplication.shared.terminate(nil) }
+                Button {
+                    isShowingInfo.toggle()
+                } label: {
+                    Image(systemName: "questionmark.circle")
+                }
+                .buttonStyle(.borderless)
+                .help("About vc-funding")
+                .popover(isPresented: $isShowingInfo, arrowEdge: .bottom) {
+                    InfoPopoverView()
+                }
             }
         }
         .padding(12)
@@ -144,5 +155,46 @@ struct MenuContentView: View {
 
     private static func relativeText(for date: Date) -> String {
         relative.string(for: date) ?? "at an unknown time"
+    }
+}
+
+private struct InfoPopoverView: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "terminal.fill")
+                    .foregroundStyle(.tint)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("vc-funding")
+                        .font(.headline)
+                    Text("Coding-agent runway at a glance")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Divider()
+
+            infoRow("🟢", "0–69%", "Plenty of runway")
+            infoRow("🟠", "70–89%", "Keep an eye on it")
+            infoRow("🔴", "90–100%", "Time to switch")
+            infoRow("🔥", "Before reset", "Time to burn tokens")
+
+            Divider()
+
+            Label("Reads local Codex session events only", systemImage: "folder")
+            Label("No credentials, analytics, or uploads", systemImage: "lock.shield")
+        }
+        .font(.caption)
+        .padding(14)
+        .frame(width: 280)
+    }
+
+    private func infoRow(_ icon: String, _ range: String, _ meaning: String) -> some View {
+        HStack(spacing: 8) {
+            Text(icon).frame(width: 22)
+            Text(range).monospacedDigit().frame(width: 76, alignment: .leading)
+            Text(meaning).foregroundStyle(.secondary)
+        }
     }
 }
