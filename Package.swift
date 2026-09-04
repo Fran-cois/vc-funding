@@ -2,10 +2,10 @@
 import PackageDescription
 
 let package = Package(
-    name: "coding-agent-percentage",
+    name: "vc-funding",
     platforms: [.macOS(.v13)],
     products: [
-        .executable(name: "coding-agent-percentage", targets: ["CodingAgentPercentage"])
+        .executable(name: "vc-funding", targets: ["CodingAgentPercentage"])
     ],
     targets: [
         .executableTarget(name: "CodingAgentPercentage"),

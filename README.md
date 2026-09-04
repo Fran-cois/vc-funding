@@ -1,6 +1,6 @@
-# coding-agent-percentage
+# vc-funding
 
-A private, native macOS menu bar app that shows Codex usage at a glance:
+A private, native macOS menu bar app that shows whether Codex still has enough "funding" at a glance:
 
 ```text
 〉_ 5h 42% · 7d 68%
@@ -37,22 +37,22 @@ swift test
 ./scripts/build-app.sh
 ```
 
-The packaged app is created at `.build/coding-agent-percentage.app`. Run it with:
+The packaged app is created at `.build/vc-funding.app`. Run it with:
 
 ```sh
-open .build/coding-agent-percentage.app
+open .build/vc-funding.app
 ```
 
 For a stable install location (recommended before enabling launch at login):
 
 ```sh
-cp -R .build/coding-agent-percentage.app /Applications/
-open /Applications/coding-agent-percentage.app
+cp -R .build/vc-funding.app /Applications/
+open /Applications/vc-funding.app
 ```
 
 Open **Settings…** from the menu and enable **Launch at login**. macOS may surface the item in System Settings → General → Login Items.
 
-For development, `swift run coding-agent-percentage` also works, but launch-at-login registration requires running the packaged `.app`.
+For development, `swift run vc-funding` also works, but launch-at-login registration requires running the packaged `.app`.
 
 ## Project layout
 

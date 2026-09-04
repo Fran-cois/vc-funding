@@ -9,7 +9,12 @@ struct MenuContentView: View {
             HStack(spacing: 8) {
                 Image(systemName: "terminal.fill")
                     .foregroundStyle(.tint)
-                Text("Codex usage").font(.headline)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("VC funding").font(.headline)
+                    Text("Codex usage")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
                 Spacer()
                 if store.isRefreshing {
                     ProgressView().controlSize(.small)

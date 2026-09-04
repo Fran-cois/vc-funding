@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct CodingAgentPercentageApp: App {
+struct VCFundingApp: App {
     @StateObject private var store: UsageStore
     private let scheduler = RefreshScheduler()
 
