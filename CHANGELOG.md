@@ -17,6 +17,7 @@ All notable changes to **vc-funding** are documented here. Versions follow [Sema
 - Homebrew Cask release tooling
 - Privacy-focused documentation and generated demo screenshots
 - MIT license
+- Documentation of the planned, credential-free Claude Code status-line data source
 - Swift Testing coverage for parsing, providers, display state, and notifications
 
 [0.1.0]: https://github.com/Fran-cois/vc-funding/releases/tag/v0.1.0

@@ -182,6 +182,7 @@ private struct InfoPopoverView: View {
             Divider()
 
             Label("Reads local Codex session events only", systemImage: "folder")
+            Label("Claude Code status-line sync: not configured", systemImage: "link.badge.plus")
             Label("No credentials, analytics, or uploads", systemImage: "lock.shield")
 
             Divider()

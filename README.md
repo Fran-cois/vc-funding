@@ -60,6 +60,21 @@ $CODEX_HOME/sessions/**/*.jsonl
 
 The local event schema is not a documented stable public API. Missing or expired windows are omitted from the menu bar and explained in the dropdown.
 
+### How Claude Code data works
+
+Claude Code is visible as a provider tab, but **vc-funding does not collect its usage yet**. The safe integration path is Claude Code's documented [`statusLine` JSON](https://code.claude.com/docs/en/statusline), not its authentication files.
+
+Claude Code sends these fields to a configured local status-line command:
+
+```text
+rate_limits.five_hour.used_percentage
+rate_limits.five_hour.resets_at
+rate_limits.seven_day.used_percentage
+rate_limits.seven_day.resets_at
+```
+
+A future `ClaudeCodeUsageProvider` will read only those four values from a small local cache written by the status-line command. It will not inspect OAuth tokens, API keys, transcripts, prompts, or account details. Until that provider and opt-in setup are implemented, the Claude Code tab intentionally displays **not configured**.
+
 ## Alerts
 
 | Indicator | Meaning |
