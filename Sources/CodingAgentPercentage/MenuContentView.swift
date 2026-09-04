@@ -5,13 +5,27 @@ struct MenuContentView: View {
     @ObservedObject var store: UsageStore
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Codex usage").font(.headline)
-            usageRow("Current 5h", window: store.snapshot?.fiveHour)
-            usageRow("Weekly", window: store.snapshot?.weekly)
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 8) {
+                Image(systemName: "terminal.fill")
+                    .foregroundStyle(.tint)
+                Text("Codex usage").font(.headline)
+                Spacer()
+                if store.isRefreshing {
+                    ProgressView().controlSize(.small)
+                }
+            }
+
+            usageCard("5-hour window", shortTitle: "5h", window: store.snapshot?.fiveHour)
+            usageCard("Weekly window", shortTitle: "7d", window: store.snapshot?.weekly)
 
             Divider()
-            detailRow("Last refresh", value: store.snapshot.map { Self.relativeText(for: $0.refreshedAt) } ?? "Never")
+            Label {
+                detailRow("Last refresh", value: store.snapshot.map { Self.relativeText(for: $0.refreshedAt) } ?? "Never")
+            } icon: {
+                Image(systemName: "arrow.clockwise")
+                    .foregroundStyle(.secondary)
+            }
 
             if let error = store.errorMessage {
                 Text(error)
@@ -37,18 +51,48 @@ struct MenuContentView: View {
             }
         }
         .padding(12)
-        .frame(width: 300)
+        .frame(width: 320)
     }
 
-    private func usageRow(_ title: String, window: UsageWindow?) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            detailRow(title, value: window.map { "\($0.roundedPercent)%" } ?? "Unavailable")
+    private func usageCard(_ title: String, shortTitle: String, window: UsageWindow?) -> some View {
+        VStack(alignment: .leading, spacing: 7) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(shortTitle)
+                        .font(.title3.weight(.semibold))
+                    Text(title)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Text(window.map { "\($0.roundedPercent)%" } ?? "N/A")
+                    .font(.title2.bold())
+                    .monospacedDigit()
+                    .foregroundStyle(window.map { usageColor($0.usedPercent) } ?? Color.secondary)
+            }
+
             if let window {
+                ProgressView(value: window.usedPercent, total: 100)
+                    .tint(usageColor(window.usedPercent))
                 Text("Resets \(Self.relativeText(for: window.resetsAt))")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else {
+                ProgressView(value: 0, total: 100)
+                    .tint(.secondary)
+                Text("No current value in local Codex events")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
         }
+        .padding(10)
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 9))
+    }
+
+    private func usageColor(_ percent: Double) -> Color {
+        if percent >= 90 { return .red }
+        if percent >= 70 { return .orange }
+        return .green
     }
 
     private func detailRow(_ title: String, value: String) -> some View {

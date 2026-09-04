@@ -14,7 +14,7 @@ final class UsageStore: ObservableObject {
     }
 
     var menuBarTitle: String {
-        guard let snapshot else { return "5h — · 7d —" }
+        guard let snapshot else { return "5h N/A  ·  7d N/A" }
         return "5h \(percent(snapshot.fiveHour)) · 7d \(percent(snapshot.weekly))"
     }
 
@@ -31,6 +31,6 @@ final class UsageStore: ObservableObject {
     }
 
     private func percent(_ window: UsageWindow?) -> String {
-        window.map { "\($0.roundedPercent)%" } ?? "—"
+        window.map { "\($0.roundedPercent)%" } ?? "N/A"
     }
 }

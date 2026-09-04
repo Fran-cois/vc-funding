@@ -13,9 +13,12 @@ struct CodingAgentPercentageApp: App {
         MenuBarExtra {
             MenuContentView(store: store)
         } label: {
-            Text(store.menuBarTitle)
-                .monospacedDigit()
-                .onAppear { scheduler.start { await store.refresh() } }
+            HStack(spacing: 5) {
+                Image(systemName: "terminal")
+                Text(store.menuBarTitle)
+                    .monospacedDigit()
+            }
+            .onAppear { scheduler.start { await store.refresh() } }
         }
         .menuBarExtraStyle(.window)
 
