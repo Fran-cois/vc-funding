@@ -58,6 +58,7 @@ struct VCFundingApp: App {
             .compactMap { $0?.usedPercent }
             .max() ?? 0
         if maximum >= 90 { return "🔴" }
+        if store.shouldBurnTokens { return "🔥" }
         if maximum >= 70 { return "🟠" }
         return "🟢"
     }

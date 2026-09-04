@@ -37,6 +37,13 @@ struct MenuContentView: View {
                     .padding(10)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(.red.gradient, in: RoundedRectangle(cornerRadius: 9))
+            } else if let reason = store.burnReason(for: selectedAgent) {
+                Label(reason, systemImage: "flame.fill")
+                    .font(.callout.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(.purple.gradient, in: RoundedRectangle(cornerRadius: 9))
             }
 
             let snapshot = store.snapshot(for: selectedAgent)

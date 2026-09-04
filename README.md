@@ -15,6 +15,7 @@
 - Omits unavailable values instead of displaying `N/A`
 - Shows reset countdowns and last-refresh time
 - Warns at 90% usage with a deduplicated native macOS notification
+- Shows **Time to burn tokens 🔥** when unused quota is close to resetting
 - Provides Codex and Claude Code tabs, ready for more providers
 - Refreshes every five minutes, with a manual refresh button
 - Can launch automatically at login
@@ -28,7 +29,9 @@
 | 70–89% | 🟠 | Keep an eye on it |
 | 90–100% | 🔴 | Consider switching agent |
 
-The menu bar uses a macOS-safe `🟢/🟠/🔴` indicator so the percentage remains readable in light and dark menu bars. At 90%, the app requests notification permission and sends one native notification per reset window—no repeated notification every five minutes. If a window has no fresh local value, it is simply omitted from the menu bar and explained inside the dropdown.
+The menu bar uses a macOS-safe `🟢/🟠/🔴` indicator so the percentage remains readable in light and dark menu bars. At 90%, the app requests notification permission and sends one native notification per reset window—no repeated notification every five minutes.
+
+The 🔥 alert appears when at least 20% remains with less than one hour before a 5-hour reset, or less than 24 hours before a weekly reset. Switch alerts take priority over burn alerts. If a window has no fresh local value, it is simply omitted from the menu bar and explained inside the dropdown.
 
 ## Agent support
 

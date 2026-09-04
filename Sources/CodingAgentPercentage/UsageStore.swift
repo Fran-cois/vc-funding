@@ -34,6 +34,10 @@ final class UsageStore: ObservableObject {
             .contains { $0 >= 90 }
     }
 
+    var shouldBurnTokens: Bool {
+        snapshot(for: .codex).flatMap { SwitchNotificationManager.burnCandidate(for: $0) } != nil
+    }
+
     func snapshot(for agent: CodingAgent) -> UsageSnapshot? {
         snapshots[agent.rawValue]
     }
@@ -50,6 +54,13 @@ final class UsageStore: ObservableObject {
             .filter({ $0.1 >= 90 })
             .max(by: { $0.1 < $1.1 }) else { return nil }
         return "\(urgent.0) usage is at \(Int(urgent.1.rounded()))%. Consider switching coding agent."
+    }
+
+    func burnReason(for agent: CodingAgent, now: Date = Date()) -> String? {
+        guard let snapshot = snapshot(for: agent),
+              let candidate = SwitchNotificationManager.burnCandidate(for: snapshot, now: now) else { return nil }
+        let remaining = max(0, 100 - candidate.window.roundedPercent)
+        return "Time to burn tokens: \(remaining)% remains in the \(candidate.label) window before reset."
     }
 
     func refresh() async {
