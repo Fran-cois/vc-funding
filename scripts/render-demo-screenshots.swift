@@ -50,15 +50,15 @@ struct DemoDropdown: View {
                     Text("Codex usage").font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
+                if !alert {
+                    Text("💸").font(.title2)
+                }
             }
 
-            HStack(spacing: 0) {
-                Text("Codex").frame(maxWidth: .infinity).padding(7)
-                    .background(Color.white.opacity(0.14), in: RoundedRectangle(cornerRadius: 7))
-                Text("Claude Code").frame(maxWidth: .infinity).padding(7)
-            }
-            .padding(3)
-            .background(Color.black.opacity(0.25), in: RoundedRectangle(cornerRadius: 9))
+            Text("Codex")
+                .frame(maxWidth: .infinity)
+                .padding(7)
+                .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 7))
 
             if alert {
                 Label("5h usage is at 95%. Consider switching coding agent.", systemImage: "exclamationmark.triangle.fill")
@@ -80,13 +80,15 @@ struct DemoDropdown: View {
             HStack {
                 Text("Refresh").padding(.horizontal, 14).padding(.vertical, 7)
                     .background(Color.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 7))
-                Text("Settings…").padding(.horizontal, 14).padding(.vertical, 7)
                 Spacer()
                 Text("Quit").padding(.horizontal, 14).padding(.vertical, 7)
+                    .background(Color.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 7))
+                Image(systemName: "questionmark.circle")
+                    .font(.title3)
             }
         }
         .padding(22)
-        .frame(width: 460)
+        .frame(width: 360)
         .background(Color(nsColor: .windowBackgroundColor))
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color.white.opacity(0.12)))
