@@ -75,9 +75,6 @@ struct MenuContentView: View {
                 }
                 .disabled(store.isRefreshing)
 
-                Button("Settings…") {
-                    NSApplication.shared.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-                }
                 Spacer()
                 Button("Quit") { NSApplication.shared.terminate(nil) }
                 Button {
@@ -159,6 +156,8 @@ struct MenuContentView: View {
 }
 
 private struct InfoPopoverView: View {
+    @StateObject private var login = LoginItemManager()
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
@@ -184,6 +183,16 @@ private struct InfoPopoverView: View {
 
             Label("Reads local Codex session events only", systemImage: "folder")
             Label("No credentials, analytics, or uploads", systemImage: "lock.shield")
+
+            Divider()
+
+            Toggle("Launch at login", isOn: Binding(
+                get: { login.isEnabled },
+                set: { login.setEnabled($0) }
+            ))
+            if let error = login.errorMessage {
+                Text(error).foregroundStyle(.red)
+            }
         }
         .font(.caption)
         .padding(14)

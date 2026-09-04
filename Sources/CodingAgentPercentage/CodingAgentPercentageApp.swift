@@ -35,7 +35,6 @@ struct VCFundingApp: App {
         }
         .menuBarExtraStyle(.window)
 
-        Settings { SettingsView() }
     }
 
     private func usageLabel(_ label: String, window: UsageWindow) -> some View {

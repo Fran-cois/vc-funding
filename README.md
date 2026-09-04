@@ -88,7 +88,7 @@ cp -R .build/vc-funding.app /Applications/
 open /Applications/vc-funding.app
 ```
 
-Then open **Settings…** and enable **Launch at login**. macOS may also show it under **System Settings → General → Login Items**.
+Then open the `?` information popover and enable **Launch at login**. macOS may also show it under **System Settings → General → Login Items**.
 
 For development, `swift run vc-funding` works too, but launch-at-login registration requires the packaged `.app`.
 
