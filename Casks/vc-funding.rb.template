@@ -1,0 +1,13 @@
+cask "vc-funding" do
+  version "__VERSION__"
+  sha256 "__SHA256__"
+
+  url "__URL__"
+  name "vc-funding"
+  desc "Menu bar monitor for coding-agent usage"
+  homepage "__HOMEPAGE__"
+
+  depends_on macos: :ventura
+
+  app "vc-funding.app"
+end

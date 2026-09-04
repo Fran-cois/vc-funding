@@ -1,0 +1,38 @@
+{
+  "name": "vc-funding",
+  "version": "0.1.0",
+  "description": "Private macOS menu bar monitor for coding-agent usage",
+  "type": "module",
+  "bin": {
+    "vc-funding": "bin/vc-funding.js"
+  },
+  "files": [
+    "bin/",
+    "Sources/",
+    "Tests/",
+    "scripts/build-app.sh",
+    "support/",
+    "Package.swift",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "swift test",
+    "pack:check": "npm pack --dry-run"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "os": [
+    "darwin"
+  ],
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "codex",
+    "macos",
+    "menu-bar",
+    "usage"
+  ]
+}

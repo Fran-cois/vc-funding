@@ -81,6 +81,42 @@ Then open **Settings…** and enable **Launch at login**. macOS may also show it
 
 For development, `swift run vc-funding` works too, but launch-at-login registration requires the packaged `.app`.
 
+## Install with npx
+
+Once the package is published to npm:
+
+```sh
+npx vc-funding
+```
+
+This builds the native app from the packaged Swift source and opens it. To keep a stable copy in `~/Applications`—recommended for launch at login—run:
+
+```sh
+npx vc-funding --install
+```
+
+Node.js 18+, Swift, and macOS 13+ are required. Maintainers can validate the exact npm payload before publishing with `npm run pack:check`.
+
+## Install with Homebrew
+
+Native macOS applications are distributed through a Homebrew Cask. After a release archive and tap are published, installation is:
+
+```sh
+brew install --cask vc-funding
+```
+
+Maintainer release flow:
+
+```sh
+./scripts/package-release.sh
+./scripts/generate-cask.sh \
+  "https://github.com/OWNER/REPO/releases/download/v0.1.0/vc-funding-0.1.0.zip" \
+  "https://github.com/OWNER/REPO" \
+  dist/vc-funding-0.1.0.zip
+```
+
+Commit the generated `Casks/vc-funding.rb` to the Homebrew tap repository. The generator inserts the app version and archive SHA-256 into the Cask; the generated file is ignored here to prevent accidentally committing placeholder release URLs.
+
 ## Architecture
 
 ```text
