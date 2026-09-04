@@ -19,7 +19,7 @@ struct MenuContentView: View {
                 }
                 Spacer()
                 if store.isRefreshing {
-                    ProgressView().controlSize(.small)
+                    MoneyLoaderView()
                 }
             }
 
@@ -188,6 +188,24 @@ struct MenuContentView: View {
 
     private static func relativeText(for date: Date) -> String {
         relative.string(for: date) ?? "at an unknown time"
+    }
+}
+
+private struct MoneyLoaderView: View {
+    @State private var isAnimating = false
+
+    var body: some View {
+        Text("💸")
+            .font(.system(size: 20))
+            .rotationEffect(.degrees(isAnimating ? 8 : -8))
+            .scaleEffect(isAnimating ? 1.08 : 0.9)
+            .offset(y: isAnimating ? -2 : 2)
+            .animation(
+                .easeInOut(duration: 0.45).repeatForever(autoreverses: true),
+                value: isAnimating
+            )
+            .onAppear { isAnimating = true }
+            .accessibilityLabel("Refreshing usage")
     }
 }
 

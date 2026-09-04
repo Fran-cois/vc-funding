@@ -9,6 +9,7 @@ All notable changes to **vc-funding** are documented here. Versions follow [Sema
 - Native SwiftUI macOS menu bar application
 - Local Codex 5-hour and weekly usage parsing
 - Five-minute automatic refresh and manual refresh
+- Animated money loader in the menu header while refreshing
 - Reset countdowns and launch-at-login support
 - Codex, Claude Code, and Antigravity provider tabs
 - Automatic provider discovery; tabs require usable usage data and otherwise fall back to a friendly empty state

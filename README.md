@@ -17,6 +17,7 @@
 - Codex 5-hour and weekly usage percentages
 - Green, orange, and red status indicators
 - Reset countdowns and five-minute automatic refresh
+- Animated money loader during refresh
 - **Time to switch** alert at 90%
 - **Time to burn tokens** alert before unused quota resets
 - Deduplicated native macOS notifications
