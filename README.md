@@ -14,7 +14,7 @@
 - Colors available percentages green, orange, or red
 - Omits unavailable values instead of displaying `N/A`
 - Shows reset countdowns and last-refresh time
-- Warns at 90% usage that it may be time to switch agents
+- Warns at 90% usage with a deduplicated native macOS notification
 - Provides Codex and Claude Code tabs, ready for more providers
 - Refreshes every five minutes, with a manual refresh button
 - Can launch automatically at login
@@ -28,7 +28,7 @@
 | 70–89% | 🟠 | Keep an eye on it |
 | 90–100% | 🔴 | Consider switching agent |
 
-The alert is intentionally visual and quiet: no notification spam. If a window has no fresh local value, it is simply omitted from the menu bar and explained inside the dropdown.
+The menu bar uses a macOS-safe `🟢/🟠/🔴` indicator so the percentage remains readable in light and dark menu bars. At 90%, the app requests notification permission and sends one native notification per reset window—no repeated notification every five minutes. If a window has no fresh local value, it is simply omitted from the menu bar and explained inside the dropdown.
 
 ## Agent support
 
@@ -148,7 +148,7 @@ To add an agent, implement `AgentUsageProvider`, return a `UsageSnapshot`, regis
 
 ## Tests
 
-The Swift Testing suite covers parsing, malformed input, newest-event selection, expired windows, percentage clamping, display formatting without `N/A`, switch-alert boundaries, independent multi-provider results, and filesystem discovery through a temporary Codex session tree.
+The Swift Testing suite covers parsing, malformed input, newest-event selection, expired windows, percentage clamping, display formatting without `N/A`, switch-alert and notification boundaries, independent multi-provider results, and filesystem discovery through a temporary Codex session tree.
 
 ## License
 

@@ -8,9 +8,11 @@ final class UsageStore: ObservableObject {
     @Published private(set) var isRefreshing = false
 
     private let providers: [any AgentUsageProvider]
+    private let notifier: (any SwitchAlertNotifier)?
 
-    init(providers: [any AgentUsageProvider]) {
+    init(providers: [any AgentUsageProvider], notifier: (any SwitchAlertNotifier)? = nil) {
         self.providers = providers
+        self.notifier = notifier
     }
 
     convenience init(provider: any AgentUsageProvider) {
@@ -59,6 +61,7 @@ final class UsageStore: ObservableObject {
                 let snapshot = try await provider.fetchUsage()
                 snapshots[provider.agentName] = snapshot
                 errors[provider.agentName] = nil
+                await notifier?.notifyIfNeeded(snapshot: snapshot)
             } catch {
                 errors[provider.agentName] = error.localizedDescription
             }

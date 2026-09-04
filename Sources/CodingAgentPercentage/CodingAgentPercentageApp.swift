@@ -9,7 +9,7 @@ struct VCFundingApp: App {
         _store = StateObject(wrappedValue: UsageStore(providers: [
             CodexUsageProvider(),
             UnavailableAgentUsageProvider(agentName: CodingAgent.claudeCode.rawValue)
-        ]))
+        ], notifier: SwitchNotificationManager()))
     }
 
     var body: some Scene {
@@ -17,8 +17,9 @@ struct VCFundingApp: App {
             MenuContentView(store: store)
         } label: {
             HStack(spacing: 5) {
-                Image(systemName: store.shouldSwitch ? "exclamationmark.triangle.fill" : "terminal")
+                Image(systemName: "terminal")
                 if let snapshot = store.snapshot(for: .codex) {
+                    Text(statusIndicator(snapshot))
                     if let fiveHour = snapshot.fiveHour {
                         usageLabel("5h", window: fiveHour)
                     }
@@ -42,7 +43,6 @@ struct VCFundingApp: App {
             Text(label)
             Text("\(window.roundedPercent)%")
                 .fontWeight(.semibold)
-                .foregroundStyle(usageColor(window.usedPercent))
                 .monospacedDigit()
         }
     }
@@ -51,5 +51,14 @@ struct VCFundingApp: App {
         if percent >= 90 { return .red }
         if percent >= 70 { return .orange }
         return .green
+    }
+
+    private func statusIndicator(_ snapshot: UsageSnapshot) -> String {
+        let maximum = [snapshot.fiveHour, snapshot.weekly]
+            .compactMap { $0?.usedPercent }
+            .max() ?? 0
+        if maximum >= 90 { return "🔴" }
+        if maximum >= 70 { return "🟠" }
+        return "🟢"
     }
 }
