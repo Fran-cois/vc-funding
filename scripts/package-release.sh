@@ -10,6 +10,8 @@ mkdir -p "$output_dir"
 "$root_dir/scripts/build-app.sh" release
 rm -f "$archive"
 ditto -c -k --keepParent "$root_dir/.build/vc-funding.app" "$archive"
+checksum=$(shasum -a 256 "$archive" | awk '{print $1}')
+echo "$checksum  $(basename "$archive")" > "$archive.sha256"
 
 echo "Archive: $archive"
-echo "SHA-256: $(shasum -a 256 "$archive" | awk '{print $1}')"
+echo "SHA-256: $checksum"

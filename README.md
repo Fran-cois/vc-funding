@@ -170,3 +170,7 @@ swiftc -parse-as-library scripts/render-demo-screenshots.swift -o /tmp/render-vc
 ## License
 
 No license is included because this repository is intended to remain private. Without a license, no reuse rights are granted by default.
+
+## Releasing
+
+Release automation validates versions, tests the Swift and npm distributions, creates checksummed macOS artifacts, and opens a draft GitHub release from a `v*.*.*` tag. See [`RELEASE.md`](RELEASE.md) for the one-time registry setup and release checklist.
