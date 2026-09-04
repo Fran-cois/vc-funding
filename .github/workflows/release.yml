@@ -15,16 +15,10 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: npm
       - name: Validate tag and build artifacts
         env:
           RELEASE_VERSION: ${{ github.ref_name }}
         run: ./scripts/check-release.sh "${RELEASE_VERSION#v}"
-      - name: Pack npm distribution
-        run: npm pack --pack-destination dist
       - name: Create draft GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -32,7 +26,6 @@ jobs:
           gh release create "${{ github.ref_name }}"
           dist/vc-funding-*.zip
           dist/vc-funding-*.zip.sha256
-          dist/vc-funding-*.tgz
           --draft
           --verify-tag
           --title "vc-funding ${{ github.ref_name }}"

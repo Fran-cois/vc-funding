@@ -3,15 +3,13 @@
 ## One-time setup
 
 - [x] Create the public GitHub repository and add it as `origin`.
-- [x] Configure repository URLs in the app, changelog, README, and npm metadata.
-- [ ] Claim the `vc-funding` package name on npm.
-- [ ] Configure npm trusted publishing for `.github/workflows/publish-npm.yml`.
+- [x] Configure repository URLs in the app, changelog, and README.
 - [ ] Create a Homebrew tap and commit the generated `Casks/vc-funding.rb` there.
 - [ ] For a warning-free macOS download, configure Developer ID signing and notarization.
 
 ## Every release
 
-1. Update the version in `package.json` and `support/Info.plist`.
+1. Update the version in `support/Info.plist`.
 2. Update `CHANGELOG.md` and `RELEASE_NOTES.md`.
 3. Run the release checks:
 
@@ -27,9 +25,8 @@
    git push origin master v0.1.0
    ```
 
-6. The release workflow creates a **draft** GitHub release with the `.app` archive, SHA-256 file, and npm tarball.
+6. The release workflow creates a **draft** GitHub release with the `.app` archive and SHA-256 file.
 7. Verify the attached artifacts before publishing the GitHub release.
-8. Publishing the GitHub release triggers the npm trusted-publishing workflow.
-9. Generate the final Homebrew Cask with the immutable GitHub release URL and push it to the tap.
+8. Generate the final Homebrew Cask with the immutable GitHub release URL and push it to the tap.
 
-Do not create the tag until the remote URLs, npm publisher, and signing policy are settled.
+Do not create the tag until the remote URLs and signing policy are settled.

@@ -14,7 +14,7 @@ All notable changes to **vc-funding** are documented here. Versions follow [Sema
 - Traffic-light usage indicators with unavailable windows omitted
 - Deduplicated **Time to switch coding agent** notifications at 90%
 - Deduplicated **Time to burn tokens** notifications before underused quota resets
-- Homebrew Cask release tooling and an `npx` launcher
+- Homebrew Cask release tooling
 - Privacy-focused documentation and generated demo screenshots
 - Swift Testing coverage for parsing, providers, display state, and notifications
 
