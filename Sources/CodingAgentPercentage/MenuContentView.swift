@@ -198,6 +198,11 @@ private struct InfoPopoverView: View {
                 Text("Version \(Self.appVersion)")
                     .foregroundStyle(.secondary)
                 Spacer()
+                Link(destination: Self.repositoryURL) {
+                    Label("Please star on GitHub", systemImage: "star.fill")
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
             }
         }
         .font(.caption)
@@ -216,4 +221,6 @@ private struct InfoPopoverView: View {
     private static let appVersion: String = {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development"
     }()
+
+    private static let repositoryURL = URL(string: "https://github.com/Fran-cois/vc-funding")!
 }

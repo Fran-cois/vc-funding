@@ -2,9 +2,8 @@
 
 ## One-time setup
 
-- [ ] Create the GitHub repository and add it as `origin`.
-- [ ] Replace `OWNER/REPO` placeholders in `CHANGELOG.md` and `README.md`.
-- [ ] Decide whether the repository is public. npm provenance is unavailable for private repositories.
+- [x] Create the public GitHub repository and add it as `origin`.
+- [x] Configure repository URLs in the app, changelog, README, and npm metadata.
 - [ ] Claim the `vc-funding` package name on npm.
 - [ ] Configure npm trusted publishing for `.github/workflows/publish-npm.yml`.
 - [ ] Create a Homebrew tap and commit the generated `Casks/vc-funding.rb` there.

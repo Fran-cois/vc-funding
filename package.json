@@ -2,6 +2,14 @@
   "name": "vc-funding",
   "version": "0.1.0",
   "description": "Private macOS menu bar monitor for coding-agent usage",
+  "homepage": "https://github.com/Fran-cois/vc-funding#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fran-cois/vc-funding.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Fran-cois/vc-funding/issues"
+  },
   "type": "module",
   "bin": {
     "vc-funding": "bin/vc-funding.js"

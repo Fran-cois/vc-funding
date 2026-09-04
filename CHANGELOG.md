@@ -18,4 +18,4 @@ All notable changes to **vc-funding** are documented here. Versions follow [Sema
 - Privacy-focused documentation and generated demo screenshots
 - Swift Testing coverage for parsing, providers, display state, and notifications
 
-[0.1.0]: https://github.com/OWNER/REPO/releases/tag/v0.1.0
+[0.1.0]: https://github.com/Fran-cois/vc-funding/releases/tag/v0.1.0

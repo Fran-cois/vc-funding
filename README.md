@@ -8,6 +8,8 @@
 
 **vc-funding** is a private, native macOS menu bar app for checking coding-agent usage without opening a dashboard. Percentages use traffic-light colors, unavailable windows stay out of the menu bar, and a warning tells you when it may be time to switch agents.
 
+[⭐️ Star vc-funding on GitHub](https://github.com/Fran-cois/vc-funding)
+
 ![vc-funding in the macOS menu bar](docs/screenshots/menu-bar.png)
 
 <p align="center">
@@ -122,8 +124,8 @@ Maintainer release flow:
 ```sh
 ./scripts/package-release.sh
 ./scripts/generate-cask.sh \
-  "https://github.com/OWNER/REPO/releases/download/v0.1.0/vc-funding-0.1.0.zip" \
-  "https://github.com/OWNER/REPO" \
+  "https://github.com/Fran-cois/vc-funding/releases/download/v0.1.0/vc-funding-0.1.0.zip" \
+  "https://github.com/Fran-cois/vc-funding" \
   dist/vc-funding-0.1.0.zip
 ```
 
@@ -171,7 +173,7 @@ swiftc -parse-as-library scripts/render-demo-screenshots.swift -o /tmp/render-vc
 
 ## License
 
-No license is included because this repository is intended to remain private. Without a license, no reuse rights are granted by default.
+No license is included. The source is publicly visible, but without a license no reuse rights are granted by default.
 
 ## Releasing
 
