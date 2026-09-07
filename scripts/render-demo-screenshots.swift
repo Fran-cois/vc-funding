@@ -38,13 +38,41 @@ struct UsageCard: View {
     }
 }
 
+struct DemoProviderLogo: View {
+    let iconFileName: String
+    let color: Color
+
+    private static let iconsDirectory: URL = {
+        URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .appendingPathComponent("Sources/CodingAgentPercentage/Resources/Icons", isDirectory: true)
+    }()
+
+    private var iconImage: Image {
+        let url = Self.iconsDirectory.appendingPathComponent("\(iconFileName).svg")
+        if let nsImage = NSImage(contentsOf: url) {
+            return Image(nsImage: nsImage)
+        }
+        return Image(systemName: "questionmark.square")
+    }
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 6).fill(color.gradient)
+            iconImage.resizable().scaledToFit().frame(width: 13, height: 13)
+        }
+        .frame(width: 24, height: 24)
+    }
+}
+
 struct DemoDropdown: View {
     let alert: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(spacing: 10) {
-                Image(systemName: "terminal.fill").foregroundStyle(.blue)
+                DemoProviderLogo(iconFileName: "codex", color: Color(red: 0x10 / 255, green: 0xA3 / 255, blue: 0x7F / 255))
                 VStack(alignment: .leading, spacing: 1) {
                     Text("VC funding").font(.title3.bold())
                     Text("Codex usage").font(.caption).foregroundStyle(.secondary)
@@ -69,6 +97,99 @@ struct DemoDropdown: View {
 
             UsageCard(label: "5h", title: "5-hour window", percent: alert ? 95 : 42, reset: "in 2 hours")
             UsageCard(label: "7d", title: "Weekly window", percent: 68, reset: "in 3 days")
+
+            Divider()
+            HStack {
+                Image(systemName: "arrow.clockwise").foregroundStyle(.secondary)
+                Text("Last refresh")
+                Spacer()
+                Text("now").foregroundStyle(.secondary)
+            }
+            HStack {
+                Text("Refresh").padding(.horizontal, 14).padding(.vertical, 7)
+                    .background(Color.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 7))
+                Spacer()
+                Text("Quit").padding(.horizontal, 14).padding(.vertical, 7)
+                    .background(Color.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 7))
+                Image(systemName: "questionmark.circle")
+                    .font(.title3)
+            }
+        }
+        .padding(22)
+        .frame(width: 360)
+        .background(Color(nsColor: .windowBackgroundColor))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color.white.opacity(0.12)))
+        .padding(8)
+        .background(Color.clear)
+        .environment(\.colorScheme, .dark)
+    }
+}
+
+struct DemoSegmentedPicker: View {
+    let items: [String]
+    let selected: String
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(items, id: \.self) { item in
+                Text(item)
+                    .font(.caption.weight(item == selected ? .semibold : .regular))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .frame(maxWidth: .infinity)
+                    .background(item == selected ? Color.white.opacity(0.16) : Color.clear, in: RoundedRectangle(cornerRadius: 6))
+            }
+        }
+        .padding(3)
+        .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+struct DemoCreditsCard: View {
+    let credits: Int
+    let euro: String
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Credits").font(.title2.bold())
+                Text("Unlimited plan — usage this cycle").font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer()
+            VStack(alignment: .trailing, spacing: 2) {
+                Text("\(credits)").font(.title.bold()).monospacedDigit()
+                Text("(\(euro))").font(.caption).foregroundStyle(.secondary)
+            }
+        }
+        .padding(18)
+        .background(Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 14))
+    }
+}
+
+struct DemoCopilotDropdown: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack(spacing: 10) {
+                DemoProviderLogo(
+                    iconFileName: "github-copilot",
+                    color: Color(red: 0x89 / 255, green: 0x57 / 255, blue: 0xE5 / 255)
+                )
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("VC funding").font(.title3.bold())
+                    Text("GitHub Copilot usage").font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+            }
+
+            DemoSegmentedPicker(
+                items: ["Codex", "Claude Code", "Antigravity", "GitHub Copilot"],
+                selected: "GitHub Copilot"
+            )
+
+            DemoCreditsCard(credits: 222_157, euro: "≈ 1 910,10 €")
 
             Divider()
             HStack {
@@ -128,6 +249,7 @@ struct DemoScreenshotRenderer {
         try render(DemoMenuBar(), to: output.appendingPathComponent("menu-bar.png"))
         try render(DemoDropdown(alert: false), to: output.appendingPathComponent("usage-dropdown.png"))
         try render(DemoDropdown(alert: true), to: output.appendingPathComponent("switch-alert.png"))
+        try render(DemoCopilotDropdown(), to: output.appendingPathComponent("copilot-credits.png"))
     }
 
     static func render<V: View>(_ view: V, to url: URL) throws {

@@ -8,7 +8,10 @@ let package = Package(
         .executable(name: "vc-funding", targets: ["CodingAgentPercentage"])
     ],
     targets: [
-        .executableTarget(name: "CodingAgentPercentage"),
+        .executableTarget(
+            name: "CodingAgentPercentage",
+            resources: [.copy("Resources/Icons")]
+        ),
         .testTarget(
             name: "CodingAgentPercentageTests",
             dependencies: ["CodingAgentPercentage"]

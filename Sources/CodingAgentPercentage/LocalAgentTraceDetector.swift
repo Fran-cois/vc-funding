@@ -4,15 +4,18 @@ struct LocalAgentTraceDetector: Sendable {
     private let homeDirectory: URL
     private let applicationsDirectory: URL
     private let environment: [String: String]
+    private let hasOpenRouterAPIKey: @Sendable () -> Bool
 
     init(
         homeDirectory: URL = FileManager.default.homeDirectoryForCurrentUser,
         applicationsDirectory: URL = URL(fileURLWithPath: "/Applications", isDirectory: true),
-        environment: [String: String] = ProcessInfo.processInfo.environment
+        environment: [String: String] = ProcessInfo.processInfo.environment,
+        hasOpenRouterAPIKey: @escaping @Sendable () -> Bool = { OpenRouterSettings.hasStoredAPIKey() }
     ) {
         self.homeDirectory = homeDirectory
         self.applicationsDirectory = applicationsDirectory
         self.environment = environment
+        self.hasOpenRouterAPIKey = hasOpenRouterAPIKey
     }
 
     func detectedAgents() -> [CodingAgent] {
@@ -20,7 +23,10 @@ struct LocalAgentTraceDetector: Sendable {
     }
 
     private func hasTrace(for agent: CodingAgent) -> Bool {
-        traceLocations(for: agent).contains {
+        if agent == .openRouter {
+            return hasOpenRouterAPIKey()
+        }
+        return traceLocations(for: agent).contains {
             FileManager.default.fileExists(atPath: $0.path)
         }
     }
@@ -43,6 +49,19 @@ struct LocalAgentTraceDetector: Sendable {
                 homeDirectory.appendingPathComponent("Library/Application Support/Antigravity", isDirectory: true),
                 applicationsDirectory.appendingPathComponent("Antigravity.app", isDirectory: true)
             ]
+        case .githubCopilot:
+            return [
+                homeDirectory.appendingPathComponent(".config/github-copilot", isDirectory: true),
+                homeDirectory.appendingPathComponent(
+                    "Library/Application Support/Code/User/globalStorage/github.copilot-chat", isDirectory: true
+                ),
+                homeDirectory.appendingPathComponent(
+                    "Library/Application Support/Code/User/globalStorage/github.copilot", isDirectory: true
+                )
+            ]
+        case .openRouter:
+            // Detected via a stored Keychain API key instead, see hasTrace(for:).
+            return []
         }
     }
 }

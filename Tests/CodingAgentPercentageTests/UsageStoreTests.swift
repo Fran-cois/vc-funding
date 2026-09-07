@@ -6,6 +6,14 @@ private struct FixedUsageProvider: AgentUsageProvider {
     let agentName: String
     let fiveHourPercent: Double?
     let weeklyPercent: Double?
+    let creditsUsed: Int?
+
+    init(agentName: String, fiveHourPercent: Double?, weeklyPercent: Double?, creditsUsed: Int? = nil) {
+        self.agentName = agentName
+        self.fiveHourPercent = fiveHourPercent
+        self.weeklyPercent = weeklyPercent
+        self.creditsUsed = creditsUsed
+    }
 
     func fetchUsage() async throws -> UsageSnapshot {
         let now = Date()
@@ -18,7 +26,8 @@ private struct FixedUsageProvider: AgentUsageProvider {
                 UsageWindow(usedPercent: $0, windowMinutes: 10_080, resetsAt: now.addingTimeInterval(86_400))
             },
             refreshedAt: now,
-            sourceUpdatedAt: now
+            sourceUpdatedAt: now,
+            creditsUsed: creditsUsed
         )
     }
 }
@@ -100,7 +109,7 @@ struct UsageStoreTests {
     }
 
     @Test func exposesAllSupportedAgentTabs() {
-        #expect(CodingAgent.allCases == [.codex, .claudeCode, .antigravity])
+        #expect(CodingAgent.allCases == [.codex, .claudeCode, .antigravity, .githubCopilot, .openRouter])
     }
 
     @Test func hidesProvidersWithoutUsageEvenWhenTracesExist() async {
@@ -145,5 +154,21 @@ struct UsageStoreTests {
         #expect(store.availableAgents.isEmpty)
         #expect(store.snapshots.isEmpty)
         #expect(store.errors.isEmpty)
+    }
+
+    @Test func showsProvidersWithOnlyCreditUsage() async {
+        let store = UsageStore(
+            providers: [FixedUsageProvider(
+                agentName: CodingAgent.githubCopilot.rawValue,
+                fiveHourPercent: nil,
+                weeklyPercent: nil,
+                creditsUsed: 222_157
+            )],
+            detectAgents: { [.githubCopilot] }
+        )
+        await store.refresh()
+
+        #expect(store.availableAgents == [.githubCopilot])
+        #expect(store.snapshot(for: .githubCopilot)?.creditsUsed == 222_157)
     }
 }

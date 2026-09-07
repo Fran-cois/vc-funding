@@ -7,8 +7,9 @@
 ![vc-funding in the menu bar](docs/screenshots/menu-bar.png)
 
 <p align="center">
-  <img src="docs/screenshots/usage-dropdown.png" alt="Codex usage dropdown" width="46%">
-  <img src="docs/screenshots/switch-alert.png" alt="Switch provider warning" width="46%">
+  <img src="docs/screenshots/usage-dropdown.png" alt="Codex usage dropdown" width="31%">
+  <img src="docs/screenshots/switch-alert.png" alt="Switch provider warning" width="31%">
+  <img src="docs/screenshots/copilot-credits.png" alt="GitHub Copilot credits usage" width="31%">
 </p>
 
 ## Features
@@ -22,9 +23,10 @@
 - **Time to burn tokens** alert before unused quota resets
 - Deduplicated native macOS notifications
 - Launch at login
-- Provider tabs for Codex, Claude Code, and Antigravity, shown only when usage data is available
+- Provider tabs for Codex, Claude Code, Antigravity, GitHub Copilot, and OpenRouter, shown only when usage data is available
 - Friendly empty state when no supported coding agent is detected
-- No analytics, uploads, or credential access
+- No analytics or uploads; opt-in, off-by-default GitHub Copilot and OpenRouter checks are the only providers that read a credential and call the network
+- Opt-in weekly leaderboard with two just-for-fun prizes: **maxeur de plan max** and **reverse VC funding**
 
 ## Install
 
@@ -54,7 +56,7 @@ open .build/vc-funding.app
 
 Provider discovery checks only whether known local app/session directories exist. It does not read credentials or send discovery data anywhere. A tab appears only after its provider returns usable local usage data; an installed but unconfigured provider stays hidden. If none returns data, the menu displays **No VC funding found…**.
 
-vc-funding makes no network requests. It reads only Codex `token_count.rate_limits` events from:
+vc-funding makes no network requests, with one explicit exception: an off-by-default GitHub Copilot toggle (see below). Every other provider reads only Codex `token_count.rate_limits` events from:
 
 ```text
 $CODEX_HOME/sessions/**/*.jsonl
@@ -84,6 +86,27 @@ A future `ClaudeCodeUsageProvider` will read only those four values from a small
 Antigravity is available as a provider tab, but **vc-funding does not collect its usage yet**. Antigravity CLI officially exposes model quotas through its interactive [`/usage` (`/quota`) panel](https://www.antigravity.google/docs/cli/commands/usage/). Opening that panel refreshes quota state from its backend and local disk.
 
 The official documentation does not currently describe a stable machine-readable quota command or local quota-file schema. Therefore vc-funding does not scrape the TUI, invoke private endpoints, or inspect Google credentials. The Antigravity tab intentionally displays **not configured** until Google documents a safe structured source.
+
+### How GitHub Copilot data works
+
+GitHub Copilot has no local usage file to read, unlike Codex. Its quota is only exposed through GitHub's internal `copilot_internal/user` API, which needs a token. vc-funding tries the `gh` CLI's own managed token first (`gh auth token`, refreshed automatically by `gh` itself), then falls back to the long-lived tokens editor extensions store locally in `~/.config/github-copilot/hosts.json` or `apps.json`, which can go stale without being removed.
+
+Because reading a token and calling the network breaks the guarantees every other provider gives you, this is **off by default**. Enable it from the ⓘ info panel's "Enable GitHub Copilot usage (network)" toggle, right under a warning explaining exactly what it does. Once enabled, vc-funding calls `api.github.com/copilot_internal/user` and maps your premium-request quota's `percent_remaining` into the weekly window (Copilot's quota resets monthly, not weekly — the label is reused since the app has no monthly bucket). An unlimited Copilot plan has no percentage to show, so vc-funding instead displays the raw `credits_used` figure for the current cycle, next to an approximate euro amount (1 AI credit = $0.01 USD, per [GitHub's docs](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises), converted with a static, non-live USD→EUR rate). Disabling the toggle reverts to **not configured**, and no request is made unless the toggle is on.
+
+### How OpenRouter data works
+
+OpenRouter has no local sign-in to read, so you paste your own [API key](https://openrouter.ai/settings/keys) into the ⓘ info panel's "Enable OpenRouter usage (network)" field. It's stored in the macOS Keychain, never in `UserDefaults` or on disk elsewhere, and is only used to call `GET api.openrouter.ai/api/v1/key`. vc-funding reads `usage_weekly` (USD spent in the current UTC week, per [OpenRouter's docs](https://openrouter.ai/docs/api-reference/limits) — OpenRouter credits are already USD, unlike GitHub's AI credits) and shows it as a "Cost" card, same euro estimate as Copilot's unlimited-plan card. Off by default; disabling the toggle reverts to **not configured**.
+
+## Weekly leaderboard
+
+Tap the 🏆 button (next to ⓘ) to see this week's **top 10** for two just-for-fun prizes, and optionally share your own stats:
+
+- **🏆 Maxeur de plan max** — most distinct 5-hour windows observed maxed out (≥95%) this week, across every detected provider.
+- **💸 Reverse VC funding** — most spent out of pocket this week (GitHub Copilot credits and/or OpenRouter usage, converted to USD).
+
+Each row shows a country flag derived by Cloudflare from the submitter's IP at request time (never sent by the client, never GPS/location data — just the coarse, standard geolocation every request to any website already exposes). It's absent for IPs Cloudflare can't place (e.g. some VPNs/Tor).
+
+Sharing is **entirely opt-in and off by default**. Nothing is sent anywhere until you toggle "Share my stats" and enter a handle (your GitHub username or any nickname — it's public, no login is required). There is no authentication on the backend, so treat scores as for fun, not verified. The backend is a small Cloudflare Worker + D1 database (source in [`leaderboard/`](leaderboard/)); the server computes the week from its own clock and only ever sees the handle, the counts/amounts you're already viewing locally, and the request's country.
 
 ## Alerts
 

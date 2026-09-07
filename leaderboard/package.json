@@ -1,0 +1,15 @@
+{
+  "name": "vc-funding-leaderboard",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute vc-funding-leaderboard --remote --file ./schema.sql",
+    "types": "wrangler types"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "wrangler": "^4.29.0"
+  }
+}

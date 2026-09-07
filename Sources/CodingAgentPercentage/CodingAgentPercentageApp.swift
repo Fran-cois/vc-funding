@@ -4,24 +4,29 @@ import SwiftUI
 struct VCFundingApp: App {
     @StateObject private var store: UsageStore
     private let scheduler = RefreshScheduler()
+    private let maxedCycleTracker = MaxedCycleTracker()
 
     init() {
         let traceDetector = LocalAgentTraceDetector()
+        let tracker = maxedCycleTracker
         _store = StateObject(wrappedValue: UsageStore(providers: [
             CodexUsageProvider(),
             UnavailableAgentUsageProvider(agentName: CodingAgent.claudeCode.rawValue),
-            UnavailableAgentUsageProvider(agentName: CodingAgent.antigravity.rawValue)
+            UnavailableAgentUsageProvider(agentName: CodingAgent.antigravity.rawValue),
+            GitHubCopilotUsageProvider(),
+            OpenRouterUsageProvider()
         ], notifier: SwitchNotificationManager(), detectAgents: {
             traceDetector.detectedAgents()
-        }))
+        }, maxedCycleTracker: tracker))
     }
 
     var body: some Scene {
         MenuBarExtra {
-            MenuContentView(store: store)
+            MenuContentView(store: store, maxedCycleTracker: maxedCycleTracker)
         } label: {
             HStack(spacing: 5) {
-                Image(systemName: "terminal")
+                Text("🤑")
+                    .font(.system(size: 11))
                 if let snapshot = store.snapshot(for: .codex) {
                     Text(statusIndicator(snapshot))
                     if let fiveHour = snapshot.fiveHour {

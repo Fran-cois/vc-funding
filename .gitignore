@@ -6,3 +6,6 @@ DerivedData/
 dist/
 Casks/vc-funding.rb
 work/
+leaderboard/node_modules/
+leaderboard/.wrangler/
+leaderboard/worker-configuration.d.ts

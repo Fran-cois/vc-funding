@@ -11,16 +11,19 @@ final class UsageStore: ObservableObject {
     private let providers: [any AgentUsageProvider]
     private let notifier: (any SwitchAlertNotifier)?
     private let detectAgents: @Sendable () -> [CodingAgent]
+    private let maxedCycleTracker: MaxedCycleTracker?
 
     init(
         providers: [any AgentUsageProvider],
         notifier: (any SwitchAlertNotifier)? = nil,
-        detectAgents: (@Sendable () -> [CodingAgent])? = nil
+        detectAgents: (@Sendable () -> [CodingAgent])? = nil,
+        maxedCycleTracker: MaxedCycleTracker? = nil
     ) {
         self.providers = providers
         self.notifier = notifier
         let providerAgents = providers.compactMap { CodingAgent(rawValue: $0.agentName) }
         self.detectAgents = detectAgents ?? { providerAgents }
+        self.maxedCycleTracker = maxedCycleTracker
         self.availableAgents = []
     }
 
@@ -87,8 +90,9 @@ final class UsageStore: ObservableObject {
                 let snapshot = try await provider.fetchUsage()
                 snapshots[provider.agentName] = snapshot
                 errors[provider.agentName] = nil
+                maxedCycleTracker?.recordObservation(agent: provider.agentName, window: snapshot.fiveHour)
                 if let agent = CodingAgent(rawValue: provider.agentName),
-                   snapshot.fiveHour != nil || snapshot.weekly != nil {
+                   snapshot.fiveHour != nil || snapshot.weekly != nil || snapshot.creditsUsed != nil || snapshot.costUSD != nil {
                     agentsWithUsage.append(agent)
                 }
                 await notifier?.notifyIfNeeded(snapshot: snapshot)

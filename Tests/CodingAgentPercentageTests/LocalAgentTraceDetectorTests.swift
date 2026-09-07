@@ -20,7 +20,8 @@ struct LocalAgentTraceDetectorTests {
         let detector = LocalAgentTraceDetector(
             homeDirectory: home,
             applicationsDirectory: home.appendingPathComponent("Applications"),
-            environment: [:]
+            environment: [:],
+            hasOpenRouterAPIKey: { false }
         )
         #expect(detector.detectedAgents() == [.codex, .antigravity])
     }
@@ -34,8 +35,24 @@ struct LocalAgentTraceDetectorTests {
         let detector = LocalAgentTraceDetector(
             homeDirectory: home,
             applicationsDirectory: home.appendingPathComponent("Applications"),
-            environment: [:]
+            environment: [:],
+            hasOpenRouterAPIKey: { false }
         )
         #expect(detector.detectedAgents().isEmpty)
+    }
+
+    @Test func detectsOpenRouterViaInjectedKeyCheckOnly() throws {
+        let home = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: home, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: home) }
+
+        let detector = LocalAgentTraceDetector(
+            homeDirectory: home,
+            applicationsDirectory: home.appendingPathComponent("Applications"),
+            environment: [:],
+            hasOpenRouterAPIKey: { true }
+        )
+        #expect(detector.detectedAgents() == [.openRouter])
     }
 }

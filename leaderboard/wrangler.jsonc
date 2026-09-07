@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "vc-funding-leaderboard",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-07",
+  "observability": { "enabled": true },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "vc-funding-leaderboard",
+      "database_id": "f1889b97-9e18-46a2-b56e-c22b29ddc976"
+    }
+  ]
+}
