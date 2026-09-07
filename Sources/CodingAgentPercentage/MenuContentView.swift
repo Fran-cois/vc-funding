@@ -394,8 +394,8 @@ private struct LeaderboardPopoverView: View {
             HStack(spacing: 8) {
                 Image(systemName: "trophy.fill").foregroundStyle(.yellow)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Weekly leaderboard").font(.headline)
-                    Text(viewModel.standings.map { "Week \($0.weekId)" } ?? "Not loaded yet")
+                    Text(L10n.pick("Weekly leaderboard", "Classement hebdomadaire")).font(.headline)
+                    Text(viewModel.standings.map { "\(L10n.pick("Week", "Semaine")) \($0.weekId)" } ?? L10n.pick("Not loaded yet", "Pas encore chargé"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -407,14 +407,14 @@ private struct LeaderboardPopoverView: View {
 
             prizeSection(
                 title: "🏆 Maxeur de plan max",
-                subtitle: "Most 5-hour windows maxed out this week",
+                subtitle: L10n.pick("Most 5-hour windows maxed out this week", "Plus de fenêtres de 5 h saturées cette semaine"),
                 entries: viewModel.standings?.maxPlan ?? [],
-                valueText: { "\(Int($0.rounded())) maxed" }
+                valueText: { Self.maxedText($0) }
             )
 
             prizeSection(
                 title: "💸 Reverse VC funding",
-                subtitle: "Most spent out of pocket this week",
+                subtitle: L10n.pick("Most spent out of pocket this week", "Plus grosse somme dépensée de sa poche cette semaine"),
                 entries: viewModel.standings?.reverseVcFunding ?? [],
                 valueText: Self.currencyText
             )
@@ -424,18 +424,21 @@ private struct LeaderboardPopoverView: View {
                 let url = LeaderboardClient.dashboardURL(weekId: weekId)
                 NSWorkspace.shared.open(url)
             } label: {
-                Label("View full dashboard", systemImage: "safari")
+                Label(L10n.pick("View full dashboard", "Voir le dashboard complet"), systemImage: "safari")
                     .frame(maxWidth: .infinity)
             }
             .controlSize(.small)
 
             Divider()
 
-            Toggle("Share my stats (voluntary)", isOn: $settings.isEnabled)
+            Toggle(L10n.pick("Share my stats (voluntary)", "Partager mes stats (volontaire)"), isOn: $settings.isEnabled)
             if settings.isEnabled {
-                TextField("Handle (GitHub or nickname)", text: $settings.handle)
+                TextField(L10n.pick("Handle (GitHub or nickname)", "Pseudo (GitHub ou surnom)"), text: $settings.handle)
                     .textFieldStyle(.roundedBorder)
-                Text("⚠️ Your handle and weekly stats become public on this leaderboard. There is no login, so anyone can post any handle/number — treat scores as for fun, not verified.")
+                Text(L10n.pick(
+                    "⚠️ Your handle and weekly stats become public on this leaderboard. There is no login, so anyone can post any handle/number — treat scores as for fun, not verified.",
+                    "⚠️ Ton pseudo et tes stats hebdo deviennent publics sur ce classement. Pas de connexion : n'importe qui peut poster n'importe quel pseudo/chiffre — à prendre pour du fun, non vérifié."
+                ))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                 Button {
@@ -447,11 +450,11 @@ private struct LeaderboardPopoverView: View {
                         )
                     }
                 } label: {
-                    Text("Partager mes stats")
+                    Text(L10n.pick("Share my stats", "Partager mes stats"))
                 }
                 .disabled(settings.handle.trimmingCharacters(in: .whitespaces).isEmpty || viewModel.isBusy)
                 if let sharedAt = viewModel.lastSharedAt {
-                    Text("Shared \(Self.relativeText(for: sharedAt))")
+                    Text("\(L10n.pick("Shared", "Partagé")) \(Self.relativeText(for: sharedAt))")
                         .foregroundStyle(.secondary)
                 }
             }
@@ -484,7 +487,7 @@ private struct LeaderboardPopoverView: View {
             Text(title).font(.subheadline.bold())
             Text(subtitle).foregroundStyle(.secondary)
             if entries.isEmpty {
-                Text("No entries yet this week.").foregroundStyle(.secondary)
+                Text(L10n.pick("No entries yet this week.", "Aucune entrée pour l'instant cette semaine.")).foregroundStyle(.secondary)
             } else {
                 ForEach(Array(entries.prefix(10).enumerated()), id: \.offset) { index, entry in
                     HStack {
@@ -509,10 +512,16 @@ private struct LeaderboardPopoverView: View {
         return String(String.UnicodeScalarView(scalars))
     }
 
+    private static func maxedText(_ value: Double) -> String {
+        let n = Int(value.rounded())
+        return L10n.isFrench ? "\(n) saturée\(n == 1 ? "" : "s")" : "\(n) maxed"
+    }
+
     private static func currencyText(_ usd: Double) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencyCode = "USD"
+        formatter.locale = L10n.formattingLocale
         formatter.maximumFractionDigits = usd >= 100 ? 0 : 2
         return formatter.string(from: NSNumber(value: usd)) ?? String(format: "$%.2f", usd)
     }

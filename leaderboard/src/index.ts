@@ -1,3 +1,5 @@
+import { resolveLang, translations, numberLocale } from "./i18n";
+
 export interface Env {
   DB: D1Database;
 }
@@ -199,23 +201,29 @@ function flagEmoji(countryCode: string | null): string {
   return String.fromCodePoint(...[...countryCode].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
 }
 
-function usdText(usd: number): string {
-  return "$" + usd.toLocaleString("en-US", { maximumFractionDigits: usd >= 100 ? 0 : 2 });
+function usdText(usd: number, locale: string): string {
+  return (
+    "$" +
+    usd.toLocaleString(locale, { maximumFractionDigits: usd >= 100 ? 0 : 2 })
+  );
 }
 
 type MaxedRow = { handle: string; maxed_total: number; maxed_breakdown: string; country: string | null };
 type CostRow = { handle: string; cost_usd_total: number; cost_breakdown: string; country: string | null };
 
-function breakdownText(json: string, unit: string, money: boolean): string {
+function breakdownText(json: string, locale: string, money: boolean, unit: (n: number) => string): string {
   const obj = safeParseObject(json) as Record<string, number>;
   return Object.entries(obj)
-    .map(([agent, value]) => `${escapeHtml(agent)} ${money ? usdText(value) : `${Math.round(value)}${unit}`}`)
+    .map(([agent, value]) => `${escapeHtml(agent)} ${money ? usdText(value, locale) : unit(Math.round(value))}`)
     .join(" · ");
 }
 
 async function handleDashboard(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const weekId = url.searchParams.get("weekId") ?? isoWeekId(new Date());
+  const lang = resolveLang(request);
+  const t = translations(lang);
+  const locale = numberLocale(lang);
 
   const maxed = await env.DB.prepare(
     "SELECT handle, maxed_total, maxed_breakdown, country FROM entries WHERE week_id = ? ORDER BY maxed_total DESC, handle ASC LIMIT ?"
@@ -237,18 +245,18 @@ async function handleDashboard(request: Request, env: Env): Promise<Response> {
 
   const maxedRows = (maxed.results ?? [])
     .map((row, i) => {
-      const detail = breakdownText(row.maxed_breakdown, "", false);
+      const detail = breakdownText(row.maxed_breakdown, locale, false, t.maxedUnit);
       return `<tr><td class="rank">${i + 1}</td><td>${flagEmoji(row.country)} ${escapeHtml(row.handle)}</td>` +
-        `<td class="num">${Math.round(row.maxed_total)} maxed</td>` +
+        `<td class="num">${t.maxedUnit(Math.round(row.maxed_total))}</td>` +
         (detail ? `<td class="detail">${detail}</td>` : "<td class=\"detail\"></td>") + "</tr>";
     })
     .join("\n");
 
   const costRows = (reverseVc.results ?? [])
     .map((row, i) => {
-      const detail = breakdownText(row.cost_breakdown, "", true);
+      const detail = breakdownText(row.cost_breakdown, locale, true, t.maxedUnit);
       return `<tr><td class="rank">${i + 1}</td><td>${flagEmoji(row.country)} ${escapeHtml(row.handle)}</td>` +
-        `<td class="num">${usdText(row.cost_usd_total)}</td>` +
+        `<td class="num">${usdText(row.cost_usd_total, locale)}</td>` +
         (detail ? `<td class="detail">${detail}</td>` : "<td class=\"detail\"></td>") + "</tr>";
     })
     .join("\n");
@@ -259,16 +267,16 @@ async function handleDashboard(request: Request, env: Env): Promise<Response> {
       <p class="subtitle">${subtitle}</p>
       ${rows
         ? `<table><tbody>${rows}</tbody></table>`
-        : '<p class="empty">No entries yet this week.</p>'}
+        : `<p class="empty">${t.empty}</p>`}
     </section>`;
 
   const html = `<!doctype html>
-<html lang="en">
+<html lang="${t.htmlLang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<title>vc-funding — Weekly leaderboard</title>
+<title>${t.pageTitle}</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🤑</text></svg>">
 <style>
   :root { color-scheme: dark; }
@@ -303,14 +311,14 @@ async function handleDashboard(request: Request, env: Env): Promise<Response> {
 <div class="wrap">
   <header>
     <h1>🤑 vc-funding</h1>
-    <span class="week">Week ${escapeHtml(weekId)}</span>
-    <span class="count">${participants?.count ?? 0} participant${(participants?.count ?? 0) === 1 ? "" : "s"} this week</span>
+    <span class="week">${t.weekLabel} ${escapeHtml(weekId)}</span>
+    <span class="count">${t.participants(participants?.count ?? 0)}</span>
   </header>
-  ${section("🏆", "Maxeur de plan max", "Most 5-hour windows maxed out this week", maxedRows)}
-  ${section("💸", "Reverse VC funding", "Most spent out of pocket this week", costRows)}
+  ${section("🏆", t.maxTitle, t.maxSubtitle, maxedRows)}
+  ${section("💸", t.vcTitle, t.vcSubtitle, costRows)}
   <footer>
-    No login — anyone can post any handle/number, so treat scores as for fun, not verified.<br>
-    Share yours from the vc-funding macOS menu-bar app.
+    ${t.footerLine1}<br>
+    ${t.footerLine2}
   </footer>
 </div>
 </body>
