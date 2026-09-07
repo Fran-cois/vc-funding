@@ -30,6 +30,15 @@ enum LeaderboardError: LocalizedError, Equatable {
 struct LeaderboardClient: Sendable {
     static let defaultBaseURL = URL(string: "https://vc-funding-leaderboard.amat-francois.workers.dev")!
 
+    /// Public web dashboard served by the same worker (HTML page, not the JSON API).
+    static func dashboardURL(weekId: String? = nil) -> URL {
+        var components = URLComponents(url: defaultBaseURL.appendingPathComponent("dashboard"), resolvingAgainstBaseURL: false)!
+        if let weekId, !weekId.isEmpty {
+            components.queryItems = [URLQueryItem(name: "weekId", value: weekId)]
+        }
+        return components.url!
+    }
+
     private let baseURL: URL
     private let httpClient: any CopilotHTTPClient
 

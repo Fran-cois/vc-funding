@@ -419,6 +419,16 @@ private struct LeaderboardPopoverView: View {
                 valueText: Self.currencyText
             )
 
+            Button {
+                let weekId = viewModel.standings?.weekId
+                let url = LeaderboardClient.dashboardURL(weekId: weekId)
+                NSWorkspace.shared.open(url)
+            } label: {
+                Label("View full dashboard", systemImage: "safari")
+                    .frame(maxWidth: .infinity)
+            }
+            .controlSize(.small)
+
             Divider()
 
             Toggle("Share my stats (voluntary)", isOn: $settings.isEnabled)

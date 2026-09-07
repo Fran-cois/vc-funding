@@ -185,6 +185,142 @@ async function handleLeaderboard(request: Request, env: Env): Promise<Response> 
   });
 }
 
+function escapeHtml(raw: string): string {
+  return raw
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function flagEmoji(countryCode: string | null): string {
+  if (!countryCode || !/^[A-Z]{2}$/.test(countryCode)) return "🏳️";
+  return String.fromCodePoint(...[...countryCode].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
+}
+
+function usdText(usd: number): string {
+  return "$" + usd.toLocaleString("en-US", { maximumFractionDigits: usd >= 100 ? 0 : 2 });
+}
+
+type MaxedRow = { handle: string; maxed_total: number; maxed_breakdown: string; country: string | null };
+type CostRow = { handle: string; cost_usd_total: number; cost_breakdown: string; country: string | null };
+
+function breakdownText(json: string, unit: string, money: boolean): string {
+  const obj = safeParseObject(json) as Record<string, number>;
+  return Object.entries(obj)
+    .map(([agent, value]) => `${escapeHtml(agent)} ${money ? usdText(value) : `${Math.round(value)}${unit}`}`)
+    .join(" · ");
+}
+
+async function handleDashboard(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const weekId = url.searchParams.get("weekId") ?? isoWeekId(new Date());
+
+  const maxed = await env.DB.prepare(
+    "SELECT handle, maxed_total, maxed_breakdown, country FROM entries WHERE week_id = ? ORDER BY maxed_total DESC, handle ASC LIMIT ?"
+  )
+    .bind(weekId, MAX_LEADERBOARD_LIMIT)
+    .all<MaxedRow>();
+
+  const reverseVc = await env.DB.prepare(
+    "SELECT handle, cost_usd_total, cost_breakdown, country FROM entries WHERE week_id = ? ORDER BY cost_usd_total DESC, handle ASC LIMIT ?"
+  )
+    .bind(weekId, MAX_LEADERBOARD_LIMIT)
+    .all<CostRow>();
+
+  const participants = await env.DB.prepare(
+    "SELECT COUNT(DISTINCT handle) as count FROM entries WHERE week_id = ?"
+  )
+    .bind(weekId)
+    .first<{ count: number }>();
+
+  const maxedRows = (maxed.results ?? [])
+    .map((row, i) => {
+      const detail = breakdownText(row.maxed_breakdown, "", false);
+      return `<tr><td class="rank">${i + 1}</td><td>${flagEmoji(row.country)} ${escapeHtml(row.handle)}</td>` +
+        `<td class="num">${Math.round(row.maxed_total)} maxed</td>` +
+        (detail ? `<td class="detail">${detail}</td>` : "<td class=\"detail\"></td>") + "</tr>";
+    })
+    .join("\n");
+
+  const costRows = (reverseVc.results ?? [])
+    .map((row, i) => {
+      const detail = breakdownText(row.cost_breakdown, "", true);
+      return `<tr><td class="rank">${i + 1}</td><td>${flagEmoji(row.country)} ${escapeHtml(row.handle)}</td>` +
+        `<td class="num">${usdText(row.cost_usd_total)}</td>` +
+        (detail ? `<td class="detail">${detail}</td>` : "<td class=\"detail\"></td>") + "</tr>";
+    })
+    .join("\n");
+
+  const section = (emoji: string, title: string, subtitle: string, rows: string): string => `
+    <section class="card">
+      <h2>${emoji} ${title}</h2>
+      <p class="subtitle">${subtitle}</p>
+      ${rows
+        ? `<table><tbody>${rows}</tbody></table>`
+        : '<p class="empty">No entries yet this week.</p>'}
+    </section>`;
+
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>vc-funding — Weekly leaderboard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🤑</text></svg>">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 32px 20px 48px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+    background: #0d1117; color: #e6edf3;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; }
+  header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+  header h1 { font-size: 24px; margin: 0; }
+  header .week { color: #8b949e; font-size: 14px; }
+  header .count { margin-left: auto; color: #8b949e; font-size: 13px; }
+  .card {
+    background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+    padding: 20px 22px; margin-bottom: 20px;
+  }
+  .card h2 { margin: 0 0 2px; font-size: 17px; }
+  .subtitle { margin: 0 0 14px; color: #8b949e; font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  td { padding: 8px 6px; border-top: 1px solid #21262d; vertical-align: baseline; }
+  tr:first-child td { border-top: none; }
+  .rank { width: 30px; color: #8b949e; font-variant-numeric: tabular-nums; }
+  .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .detail { color: #8b949e; font-size: 12px; text-align: right; }
+  .empty { color: #8b949e; }
+  footer { color: #6e7681; font-size: 12px; margin-top: 8px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🤑 vc-funding</h1>
+    <span class="week">Week ${escapeHtml(weekId)}</span>
+    <span class="count">${participants?.count ?? 0} participant${(participants?.count ?? 0) === 1 ? "" : "s"} this week</span>
+  </header>
+  ${section("🏆", "Maxeur de plan max", "Most 5-hour windows maxed out this week", maxedRows)}
+  ${section("💸", "Reverse VC funding", "Most spent out of pocket this week", costRows)}
+  <footer>
+    No login — anyone can post any handle/number, so treat scores as for fun, not verified.<br>
+    Share yours from the vc-funding macOS menu-bar app.
+  </footer>
+</div>
+</body>
+</html>`;
+
+  return new Response(html, {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=30" },
+  });
+}
+
 export default {
   async fetch(request, env): Promise<Response> {
     const url = new URL(request.url);
@@ -194,6 +330,9 @@ export default {
       }
       if (request.method === "GET" && url.pathname === "/leaderboard") {
         return await handleLeaderboard(request, env);
+      }
+      if (request.method === "GET" && (url.pathname === "/" || url.pathname === "/dashboard")) {
+        return await handleDashboard(request, env);
       }
       return jsonResponse({ error: "Not found" }, 404);
     } catch (error) {
