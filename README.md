@@ -36,9 +36,8 @@ Download `vc-funding-0.1.0.zip` from the [latest GitHub release](https://github.
 
 ### Homebrew
 
-Once the Cask is published in the tap:
-
 ```sh
+brew tap fran-cois/tap
 brew install --cask vc-funding
 ```
 

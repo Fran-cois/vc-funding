@@ -4,7 +4,7 @@
 
 - [x] Create the public GitHub repository and add it as `origin`.
 - [x] Configure repository URLs in the app, changelog, and README.
-- [ ] Create a Homebrew tap and commit the generated `Casks/vc-funding.rb` there.
+- [x] Create a Homebrew tap and commit the generated `Casks/vc-funding.rb` there. (tap: `Fran-cois/homebrew-tap`)
 - [ ] For a warning-free macOS download, configure Developer ID signing and notarization.
 
 ## Every release
