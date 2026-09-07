@@ -55,4 +55,23 @@ struct LocalAgentTraceDetectorTests {
         )
         #expect(detector.detectedAgents() == [.openRouter])
     }
+
+    @Test func detectsCursorViaLocalTraces() throws {
+        let home = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? FileManager.default.removeItem(at: home) }
+
+        try FileManager.default.createDirectory(
+            at: home.appendingPathComponent("Library/Application Support/Cursor", isDirectory: true),
+            withIntermediateDirectories: true
+        )
+
+        let detector = LocalAgentTraceDetector(
+            homeDirectory: home,
+            applicationsDirectory: home.appendingPathComponent("Applications"),
+            environment: [:],
+            hasOpenRouterAPIKey: { false }
+        )
+        #expect(detector.detectedAgents() == [.cursor])
+    }
 }

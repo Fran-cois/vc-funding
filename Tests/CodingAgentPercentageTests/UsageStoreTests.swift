@@ -109,7 +109,7 @@ struct UsageStoreTests {
     }
 
     @Test func exposesAllSupportedAgentTabs() {
-        #expect(CodingAgent.allCases == [.codex, .claudeCode, .antigravity, .githubCopilot, .openRouter])
+        #expect(CodingAgent.allCases == [.codex, .claudeCode, .antigravity, .githubCopilot, .openRouter, .cursor])
     }
 
     @Test func hidesProvidersWithoutUsageEvenWhenTracesExist() async {

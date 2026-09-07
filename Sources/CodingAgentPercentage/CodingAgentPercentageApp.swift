@@ -14,7 +14,8 @@ struct VCFundingApp: App {
             UnavailableAgentUsageProvider(agentName: CodingAgent.claudeCode.rawValue),
             UnavailableAgentUsageProvider(agentName: CodingAgent.antigravity.rawValue),
             GitHubCopilotUsageProvider(),
-            OpenRouterUsageProvider()
+            OpenRouterUsageProvider(),
+            UnavailableAgentUsageProvider(agentName: CodingAgent.cursor.rawValue)
         ], notifier: SwitchNotificationManager(), detectAgents: {
             traceDetector.detectedAgents()
         }, maxedCycleTracker: tracker))

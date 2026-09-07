@@ -62,6 +62,12 @@ struct LocalAgentTraceDetector: Sendable {
         case .openRouter:
             // Detected via a stored Keychain API key instead, see hasTrace(for:).
             return []
+        case .cursor:
+            return [
+                homeDirectory.appendingPathComponent(".cursor", isDirectory: true),
+                homeDirectory.appendingPathComponent("Library/Application Support/Cursor", isDirectory: true),
+                applicationsDirectory.appendingPathComponent("Cursor.app", isDirectory: true)
+            ]
         }
     }
 }

@@ -8,11 +8,12 @@ enum CodingAgent: String, CaseIterable, Identifiable, Sendable {
     case antigravity = "Antigravity"
     case githubCopilot = "GitHub Copilot"
     case openRouter = "OpenRouter"
+    case cursor = "Cursor"
 
     var id: String { rawValue }
 
     /// Official provider logo, monochrome white on transparent (see Resources/Icons).
-    /// Sources: simple-icons.org (CC0) for Anthropic / GitHub Copilot / OpenRouter,
+    /// Sources: simple-icons.org (CC0) for Anthropic / GitHub Copilot / OpenRouter / Cursor,
     /// Wikimedia Commons for the OpenAI symbol and the Google Antigravity mark.
     private var iconResourceName: String {
         switch self {
@@ -21,6 +22,7 @@ enum CodingAgent: String, CaseIterable, Identifiable, Sendable {
         case .antigravity: "antigravity"
         case .githubCopilot: "github-copilot"
         case .openRouter: "openrouter"
+        case .cursor: "cursor"
         }
     }
 
@@ -32,6 +34,7 @@ enum CodingAgent: String, CaseIterable, Identifiable, Sendable {
         case .antigravity: "atom"
         case .githubCopilot: "chevron.left.forwardslash.chevron.right"
         case .openRouter: "arrow.triangle.branch"
+        case .cursor: "cursorarrow.rays"
         }
     }
 
@@ -50,6 +53,7 @@ enum CodingAgent: String, CaseIterable, Identifiable, Sendable {
         case .antigravity: Color(red: 0x42 / 255, green: 0x85 / 255, blue: 0xF4 / 255) // Google blue
         case .githubCopilot: Color(red: 0x89 / 255, green: 0x57 / 255, blue: 0xE5 / 255) // GitHub Copilot purple
         case .openRouter: Color(red: 0x64 / 255, green: 0x67 / 255, blue: 0xF2 / 255) // OpenRouter indigo
+        case .cursor: Color(red: 0x17 / 255, green: 0x17 / 255, blue: 0x17 / 255) // Cursor near-black
         }
     }
 }
