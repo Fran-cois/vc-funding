@@ -16,7 +16,8 @@ cp "$binary_dir/vc-funding" "$contents/MacOS/vc-funding"
 cp "$root_dir/support/Info.plist" "$contents/Info.plist"
 resource_bundle="$binary_dir/vc-funding_CodingAgentPercentage.bundle"
 if [ -d "$resource_bundle" ]; then
-  cp -R "$resource_bundle" "$app_dir/"
+  mkdir -p "$contents/Resources"
+  cp -R "$resource_bundle" "$contents/Resources/"
 fi
 codesign --force --sign - "$app_dir"
 
