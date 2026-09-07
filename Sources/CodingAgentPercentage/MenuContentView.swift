@@ -413,7 +413,7 @@ private struct LeaderboardPopoverView: View {
             )
 
             prizeSection(
-                title: "💸 Reverse VC funding",
+                title: "💸 Corporate Maxing",
                 subtitle: L10n.pick("Most spent out of pocket this week", "Plus grosse somme dépensée de sa poche cette semaine"),
                 entries: viewModel.standings?.reverseVcFunding ?? [],
                 valueText: Self.currencyText

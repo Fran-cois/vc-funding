@@ -26,7 +26,7 @@
 - Provider tabs for Codex, Claude Code, Antigravity, GitHub Copilot, and OpenRouter, shown only when usage data is available
 - Friendly empty state when no supported coding agent is detected
 - No analytics or uploads; opt-in, off-by-default GitHub Copilot and OpenRouter checks are the only providers that read a credential and call the network
-- Opt-in weekly leaderboard with two just-for-fun prizes: **maxeur de plan max** and **reverse VC funding**
+- Opt-in weekly leaderboard with two just-for-fun prizes: **maxeur de plan max** and **corporate maxing**
 
 ## Install
 
@@ -102,7 +102,7 @@ OpenRouter has no local sign-in to read, so you paste your own [API key](https:/
 Tap the 🏆 button (next to ⓘ) to see this week's **top 10** for two just-for-fun prizes, and optionally share your own stats:
 
 - **🏆 Maxeur de plan max** — most distinct 5-hour windows observed maxed out (≥95%) this week, across every detected provider.
-- **💸 Reverse VC funding** — most spent out of pocket this week (GitHub Copilot credits and/or OpenRouter usage, converted to USD).
+- **💸 Corporate Maxing** — most spent out of pocket this week (GitHub Copilot credits and/or OpenRouter usage, converted to USD).
 
 Each row shows a country flag derived by Cloudflare from the submitter's IP at request time (never sent by the client, never GPS/location data — just the coarse, standard geolocation every request to any website already exposes). It's absent for IPs Cloudflare can't place (e.g. some VPNs/Tor).
 
