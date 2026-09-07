@@ -5,6 +5,7 @@ struct VCFundingApp: App {
     @StateObject private var store: UsageStore
     private let scheduler = RefreshScheduler()
     private let maxedCycleTracker = MaxedCycleTracker()
+    private let onboarding = OnboardingWindowController()
 
     init() {
         let traceDetector = LocalAgentTraceDetector()
@@ -41,7 +42,10 @@ struct VCFundingApp: App {
                     }
                 }
             }
-            .onAppear { scheduler.start { await store.refresh() } }
+            .onAppear {
+                scheduler.start { await store.refresh() }
+                onboarding.showIfNeeded()
+            }
         }
         .menuBarExtraStyle(.window)
 
