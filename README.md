@@ -25,7 +25,7 @@
 - Launch at login
 - Provider tabs for Codex, Claude Code, Antigravity, GitHub Copilot, and OpenRouter, shown only when usage data is available
 - Friendly empty state when no supported coding agent is detected
-- No analytics or uploads; opt-in, off-by-default GitHub Copilot and OpenRouter checks are the only providers that read a credential and call the network
+- No analytics or uploads; Codex usage is read live via the already-installed `codex` CLI (falling back to local logs if that call fails), and opt-in, off-by-default GitHub Copilot and OpenRouter checks are the only other providers that read a credential and call the network
 - Opt-in weekly leaderboard with two just-for-fun prizes: **maxeur de plan max** and **corporate maxing**
 
 ## Install
@@ -55,15 +55,17 @@ open .build/vc-funding.app
 
 Provider discovery checks only whether known local app/session directories exist. It does not read credentials or send discovery data anywhere. A tab appears only after its provider returns usable local usage data; an installed but unconfigured provider stays hidden. If none returns data, the menu displays **No VC funding found…**.
 
-vc-funding makes no network requests, with one explicit exception: an off-by-default GitHub Copilot toggle (see below). Every other provider reads only Codex `token_count.rate_limits` events from:
+vc-funding itself opens no network sockets and never reads `~/.codex/auth.json` or any credential file. For Codex, it instead runs the `codex` CLI that's already installed and signed in on your Mac (`codex app-server`, over its local stdio JSON-RPC protocol) and asks it for the account's current rate limits (`account/rateLimits/read`) — the same call the Codex TUI's own status line uses, so the numbers reflect the live backend state (parsing local logs alone could show stale figures, e.g. after a quota-exhaustion fallback that a given session never logged). That CLI call goes over whatever network access `codex` already has as your own authenticated tool; vc-funding never sees or handles the credential itself. If the `codex` CLI is missing, too old to support this call, or the call otherwise fails, vc-funding falls back to parsing local Codex `token_count.rate_limits` events from:
 
 ```text
 $CODEX_HOME/sessions/**/*.jsonl
 ```
 
-`CODEX_HOME` defaults to `~/.codex`. The app never opens `~/.codex/auth.json`, logs credentials, derives quotas from token counts, or calls undocumented endpoints.
+`CODEX_HOME` defaults to `~/.codex`. Aside from that fallback, the app never derives quotas from token counts or calls undocumented endpoints.
 
-The local event schema is not a documented stable public API. Missing or expired windows are omitted from the menu bar and explained in the dropdown.
+The local event schema and the CLI's JSON-RPC protocol are not documented stable public APIs. Missing or expired windows are omitted from the menu bar and explained in the dropdown.
+
+If you'd rather vc-funding never run the `codex` CLI at all, enable **No-network mode (Codex)** in the ⓘ info panel. It skips the CLI call unconditionally and always falls back to local log parsing — the panel labels it clearly: **⚠️ Careful, not reliable**, since local logs alone can show stale or missing numbers.
 
 ### How Claude Code data works
 

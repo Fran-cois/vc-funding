@@ -11,7 +11,7 @@ struct VCFundingApp: App {
         let traceDetector = LocalAgentTraceDetector()
         let tracker = maxedCycleTracker
         _store = StateObject(wrappedValue: UsageStore(providers: [
-            CodexUsageProvider(),
+            CodexCLIUsageProvider(),
             UnavailableAgentUsageProvider(agentName: CodingAgent.claudeCode.rawValue),
             UnavailableAgentUsageProvider(agentName: CodingAgent.antigravity.rawValue),
             GitHubCopilotUsageProvider(),

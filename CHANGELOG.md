@@ -2,6 +2,16 @@
 
 All notable changes to **vc-funding** are documented here. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Off-by-default **No-network mode (Codex)** toggle that skips the `codex` CLI call entirely and forces local session-log parsing, with a "not reliable" warning in the info panel.
+
+### Changed
+
+- Codex usage now reads live account rate limits from the `codex` CLI's app-server RPC (`account/rateLimits/read`), the same source the Codex TUI status line uses, falling back to local session-log parsing only if the CLI call is unavailable. Local log parsing alone could show stale figures (e.g. after a quota-exhaustion fallback a given session never logged).
+
 ## [0.1.0] - 2026-09-04
 
 ### Added

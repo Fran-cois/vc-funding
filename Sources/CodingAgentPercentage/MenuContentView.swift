@@ -288,6 +288,7 @@ private struct InfoPopoverView: View {
     @StateObject private var login = LoginItemManager()
     @StateObject private var copilotUsageSettings = CopilotNetworkUsageSettings()
     @StateObject private var openRouterSettings = OpenRouterSettings()
+    @StateObject private var codexOfflineModeSettings = CodexOfflineModeSettings()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -312,11 +313,24 @@ private struct InfoPopoverView: View {
 
             Divider()
 
-            Label("Reads local Codex session events only", systemImage: "folder")
+            Label("Reads Codex usage from the codex CLI, with local session events as fallback", systemImage: "terminal")
             Label("Claude Code status-line sync: not configured", systemImage: "link.badge.plus")
             Label("Antigravity quota sync: not configured", systemImage: "link.badge.plus")
             Label("GitHub Copilot quota sync: opt-in below, off by default", systemImage: "link.badge.plus")
             Label("No credentials, analytics, or uploads unless you opt in below", systemImage: "lock.shield")
+
+            Divider()
+
+            Toggle(L10n.pick("No-network mode (Codex)", "Mode sans réseau (Codex)"), isOn: Binding(
+                get: { codexOfflineModeSettings.isEnabled },
+                set: { codexOfflineModeSettings.isEnabled = $0 }
+            ))
+            Text(L10n.pick(
+                "⚠️ Careful, not reliable: stops vc-funding from running the codex CLI and reverts to parsing local session logs only, which can show stale or missing numbers.",
+                "⚠️ Attention, pas fiable : empêche vc-funding de lancer la CLI codex et revient au seul parsing des logs locaux, qui peut afficher des chiffres obsolètes ou manquants."
+            ))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
 
             Divider()
 
