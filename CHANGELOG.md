@@ -2,6 +2,12 @@
 
 All notable changes to **vc-funding** are documented here. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- The **maxeur de plan max** leaderboard prize now also counts maxed-out weekly (7-day) windows, not just 5-hour ones, so an agent whose weekly quota expires fully used shows up too.
+
 ## [0.2.0] - 2026-09-11
 
 ### Added

@@ -1,7 +1,8 @@
 import Foundation
 
-/// Tracks, per agent and per ISO week (UTC), how many distinct 5-hour windows were observed maxed out.
-/// This feeds the "maxeur de plan max" leaderboard prize. Local-only bookkeeping, resets every new week.
+/// Tracks, per agent and per ISO week (UTC), how many distinct usage windows (5-hour or weekly) were
+/// observed maxed out. This feeds the "maxeur de plan max" leaderboard prize. Local-only bookkeeping,
+/// resets every new week.
 @MainActor
 final class MaxedCycleTracker: ObservableObject {
     private static let maxedThresholdPercent = 95.0
@@ -28,7 +29,7 @@ final class MaxedCycleTracker: ObservableObject {
         }
     }
 
-    /// Counts a maxed 5-hour window once per distinct reset boundary per agent per week.
+    /// Counts a maxed window (5-hour or weekly) once per distinct reset boundary per agent per week.
     func recordObservation(agent: String, window: UsageWindow?, now: Date = Date()) {
         rolloverIfNeeded(now: now)
         guard let window, window.usedPercent >= Self.maxedThresholdPercent else { return }

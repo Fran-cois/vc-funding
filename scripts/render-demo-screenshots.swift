@@ -1,42 +1,6 @@
 import AppKit
+import ImageIO
 import SwiftUI
-
-struct UsageCard: View {
-    let label: String
-    let title: String
-    let percent: Int
-    let reset: String
-
-    var color: Color {
-        percent >= 90 ? .red : (percent >= 70 ? .orange : .green)
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .firstTextBaseline) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(label).font(.title2.bold())
-                    Text(title).font(.caption).foregroundStyle(.secondary)
-                }
-                Spacer()
-                Text("\(percent)%")
-                    .font(.title.bold()).monospacedDigit().foregroundStyle(color)
-            }
-            GeometryReader { geometry in
-                ZStack(alignment: .leading) {
-                    Capsule().fill(Color.white.opacity(0.12))
-                    Capsule()
-                        .fill(color)
-                        .frame(width: geometry.size.width * Double(percent) / 100)
-                }
-            }
-            .frame(height: 8)
-            Text("Resets \(reset)").font(.caption).foregroundStyle(.secondary)
-        }
-        .padding(18)
-        .background(Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 14))
-    }
-}
 
 struct DemoProviderLogo: View {
     let iconFileName: String
@@ -66,6 +30,40 @@ struct DemoProviderLogo: View {
     }
 }
 
+struct DemoLineCard: View {
+    let name: String
+    let fiveHour: Int?
+    let weekly: Int?
+
+    private func color(_ percent: Int) -> Color {
+        percent >= 90 ? .red : (percent >= 70 ? .orange : .green)
+    }
+
+    private func stat(_ label: String, _ percent: Int?) -> some View {
+        HStack(spacing: 5) {
+            Text(label).font(.caption).foregroundStyle(.secondary)
+            if let percent {
+                Text("\(percent)%").font(.callout.weight(.semibold)).monospacedDigit().foregroundStyle(color(percent))
+            } else {
+                Text("—").font(.callout).foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(name).font(.subheadline.weight(.semibold))
+            HStack(spacing: 14) {
+                stat("5h", fiveHour)
+                stat("7d", weekly)
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 12))
+    }
+}
+
 struct DemoDropdown: View {
     let alert: Bool
 
@@ -79,7 +77,7 @@ struct DemoDropdown: View {
                 }
                 Spacer()
                 if !alert {
-                    Text("💸").font(.title2)
+                    Image(systemName: "dollarsign.circle.fill").font(.title2).foregroundStyle(.green)
                 }
             }
 
@@ -95,8 +93,9 @@ struct DemoDropdown: View {
                     .background(Color.red.gradient, in: RoundedRectangle(cornerRadius: 12))
             }
 
-            UsageCard(label: "5h", title: "5-hour window", percent: alert ? 95 : 42, reset: "in 2 hours")
-            UsageCard(label: "7d", title: "Weekly window", percent: 68, reset: "in 3 days")
+            DemoLineCard(name: "Codex", fiveHour: nil, weekly: alert ? 91 : 42)
+            DemoLineCard(name: "GPT-5.3-Codex-Spark", fiveHour: alert ? 95 : 8, weekly: alert ? 78 : 35)
+            DemoLineCard(name: "gpt-reserve", fiveHour: nil, weekly: alert ? 45 : 22)
 
             Divider()
             HStack {
@@ -223,7 +222,7 @@ struct DemoMenuBar: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "terminal")
-            Text("🟢")
+            Circle().fill(.green).frame(width: 12, height: 12)
             Text("5h 42% · 7d 68%").fontWeight(.medium).monospacedDigit()
         }
         .font(.system(size: 18))
@@ -255,12 +254,51 @@ struct DemoScreenshotRenderer {
     static func render<V: View>(_ view: V, to url: URL) throws {
         let renderer = ImageRenderer(content: view)
         renderer.scale = 2
-        guard let image = renderer.nsImage,
-              let tiff = image.tiffRepresentation,
-              let bitmap = NSBitmapImageRep(data: tiff),
-              let png = bitmap.representation(using: .png, properties: [:]) else {
+        guard let sourceImage = renderer.cgImage else {
             throw NSError(domain: "vc-funding", code: 1, userInfo: [NSLocalizedDescriptionKey: "Could not render \(url.lastPathComponent)"])
         }
-        try png.write(to: url)
+        let width = sourceImage.width
+        let height = sourceImage.height
+        // BGRA byte order matches Truevision TGA's pixel layout, so no channel swap is needed below.
+        let bitmapInfo = CGImageAlphaInfo.premultipliedFirst.rawValue | CGBitmapInfo.byteOrder32Little.rawValue
+        guard let context = CGContext(
+            data: nil,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: width * 4,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: bitmapInfo
+        ), let data = context.data else {
+            throw NSError(domain: "vc-funding", code: 1, userInfo: [NSLocalizedDescriptionKey: "Could not normalize \(url.lastPathComponent)"])
+        }
+        context.draw(sourceImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+
+        // This OS build's in-process ImageIO write plugins (PNG/TIFF) crash with
+        // SIGBUS/EXC_ARM_DA_ALIGN for images produced by ImageRenderer, so the raw pixels are
+        // written out as an uncompressed TGA by hand (no ImageIO involved) and handed to the
+        // external, unaffected `sips` tool for the final PNG conversion.
+        var tga = Data(capacity: 18 + width * height * 4)
+        tga.append(contentsOf: [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        tga.append(UInt8(width & 0xFF)); tga.append(UInt8((width >> 8) & 0xFF))
+        tga.append(UInt8(height & 0xFF)); tga.append(UInt8((height >> 8) & 0xFF))
+        tga.append(32) // bits per pixel
+        tga.append(0x28) // 8 alpha bits + top-down origin (CGContext's raw buffer is bottom-up otherwise)
+        tga.append(Data(bytes: data, count: width * height * 4))
+
+        let tgaURL = url.deletingPathExtension().appendingPathExtension("tga")
+        try tga.write(to: tgaURL)
+        defer { try? FileManager.default.removeItem(at: tgaURL) }
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/sips")
+        process.arguments = ["-s", "format", "png", tgaURL.path, "--out", url.path]
+        process.standardOutput = Pipe()
+        process.standardError = Pipe()
+        try process.run()
+        process.waitUntilExit()
+        guard process.terminationStatus == 0 else {
+            throw NSError(domain: "vc-funding", code: 1, userInfo: [NSLocalizedDescriptionKey: "sips failed to convert \(url.lastPathComponent)"])
+        }
     }
 }

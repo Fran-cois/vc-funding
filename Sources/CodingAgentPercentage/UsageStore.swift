@@ -91,6 +91,7 @@ final class UsageStore: ObservableObject {
                 snapshots[provider.agentName] = snapshot
                 errors[provider.agentName] = nil
                 maxedCycleTracker?.recordObservation(agent: provider.agentName, window: snapshot.fiveHour)
+                maxedCycleTracker?.recordObservation(agent: provider.agentName, window: snapshot.weekly)
                 if let agent = CodingAgent(rawValue: provider.agentName),
                    snapshot.fiveHour != nil || snapshot.weekly != nil || snapshot.creditsUsed != nil || snapshot.costUSD != nil {
                     agentsWithUsage.append(agent)

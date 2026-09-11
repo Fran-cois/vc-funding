@@ -6,7 +6,7 @@ export interface Env {
 
 const MAX_HANDLE_LENGTH = 32;
 const MAX_AGENTS = 8;
-// ~33 possible 5-hour cycles per agent per week; capped generously above that as a sanity bound.
+// ~33 possible 5-hour cycles plus a handful of weekly resets per agent per week; capped generously above that as a sanity bound.
 const MAX_COUNT_PER_AGENT = 60;
 const MAX_COST_USD_PER_AGENT = 100_000;
 const RATE_LIMIT_WINDOW_S = 3_600;

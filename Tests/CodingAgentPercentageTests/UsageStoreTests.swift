@@ -171,4 +171,20 @@ struct UsageStoreTests {
         #expect(store.availableAgents == [.githubCopilot])
         #expect(store.snapshot(for: .githubCopilot)?.creditsUsed == 222_157)
     }
+
+    @Test func recordsBothFiveHourAndWeeklyMaxedWindowsForTheLeaderboard() async {
+        let defaults = UserDefaults(suiteName: "UsageStoreTests.\(UUID().uuidString)")!
+        let tracker = MaxedCycleTracker(defaults: defaults)
+        let store = UsageStore(
+            providers: [FixedUsageProvider(
+                agentName: CodingAgent.codex.rawValue,
+                fiveHourPercent: 100,
+                weeklyPercent: 100
+            )],
+            maxedCycleTracker: tracker
+        )
+        await store.refresh()
+
+        #expect(tracker.countsThisWeek()[CodingAgent.codex.rawValue] == 2)
+    }
 }

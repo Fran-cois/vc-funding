@@ -456,7 +456,7 @@ private struct LeaderboardPopoverView: View {
 
             prizeSection(
                 title: "🏆 Maxeur de plan max",
-                subtitle: L10n.pick("Most 5-hour windows maxed out this week", "Plus de fenêtres de 5 h saturées cette semaine"),
+                subtitle: L10n.pick("Most 5-hour or weekly windows maxed out this week", "Plus de fenêtres de 5 h ou 7 j saturées cette semaine"),
                 entries: viewModel.standings?.maxPlan ?? [],
                 valueText: { Self.maxedText($0) }
             )
