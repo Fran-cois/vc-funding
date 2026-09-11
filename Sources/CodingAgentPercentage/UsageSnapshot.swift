@@ -8,6 +8,16 @@ struct UsageWindow: Equatable, Sendable {
     var roundedPercent: Int { Int(usedPercent.rounded()) }
 }
 
+/// One named quota line within a provider that meters several limits separately (e.g. Codex breaks
+/// usage down per model/reserve: "Codex", "GPT-5.3-Codex-Spark", "gpt-reserve"...).
+struct UsageLine: Equatable, Sendable, Identifiable {
+    let name: String
+    let fiveHour: UsageWindow?
+    let weekly: UsageWindow?
+
+    var id: String { name }
+}
+
 struct UsageSnapshot: Equatable, Sendable {
     let agentName: String
     let fiveHour: UsageWindow?
@@ -18,6 +28,8 @@ struct UsageSnapshot: Equatable, Sendable {
     let creditsUsed: Int?
     /// Authoritative USD amount for the current cycle, computed by the provider from its own units. Used for the euro estimate.
     let costUSD: Double?
+    /// Per-limit breakdown, when the provider meters more than one line (e.g. Codex's model/reserve buckets). Empty otherwise.
+    let lines: [UsageLine]
 
     init(
         agentName: String,
@@ -26,7 +38,8 @@ struct UsageSnapshot: Equatable, Sendable {
         refreshedAt: Date,
         sourceUpdatedAt: Date,
         creditsUsed: Int? = nil,
-        costUSD: Double? = nil
+        costUSD: Double? = nil,
+        lines: [UsageLine] = []
     ) {
         self.agentName = agentName
         self.fiveHour = fiveHour
@@ -35,8 +48,10 @@ struct UsageSnapshot: Equatable, Sendable {
         self.sourceUpdatedAt = sourceUpdatedAt
         self.creditsUsed = creditsUsed
         self.costUSD = costUSD
+        self.lines = lines
     }
 }
+
 
 enum UsageProviderError: LocalizedError, Equatable {
     case sessionsDirectoryMissing

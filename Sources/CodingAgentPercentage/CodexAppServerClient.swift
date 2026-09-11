@@ -9,7 +9,9 @@ enum CodexAppServerClient {
         var errorDescription: String? { message }
     }
 
-    static func fetchRateLimits(timeout: TimeInterval = 8) async throws -> [String: Any] {
+    /// Returns the raw `account/rateLimits/read` result, including both the backward-compatible
+    /// single-bucket `rateLimits` field and the per-limit `rateLimitsByLimitId` breakdown.
+    static func fetchRateLimitsResult(timeout: TimeInterval = 8) async throws -> [String: Any] {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
         process.arguments = ["codex", "app-server"]
@@ -53,10 +55,10 @@ enum CodexAppServerClient {
             throw CommunicationError(message: (rpcError["message"] as? String) ?? "codex app-server returned an error")
         }
         guard let result = response["result"] as? [String: Any],
-              let rateLimits = result["rateLimits"] as? [String: Any] else {
+              result["rateLimits"] is [String: Any] else {
             throw CommunicationError(message: "codex app-server response was missing rateLimits")
         }
-        return rateLimits
+        return result
     }
 
     private static func withTimeout<T: Sendable>(

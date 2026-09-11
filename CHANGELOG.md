@@ -2,11 +2,12 @@
 
 All notable changes to **vc-funding** are documented here. Versions follow [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.2.0] - 2026-09-11
 
 ### Added
 
 - Off-by-default **No-network mode (Codex)** toggle that skips the `codex` CLI call entirely and forces local session-log parsing, with a "not reliable" warning in the info panel.
+- Codex's dropdown now shows every metered limit as its own line (e.g. **Codex**, **GPT-5.3-Codex-Spark**, **gpt-reserve**) when read via the CLI, instead of a single aggregated 5-hour/weekly pair.
 
 ### Changed
 
@@ -34,3 +35,4 @@ All notable changes to **vc-funding** are documented here. Versions follow [Sema
 - Swift Testing coverage for parsing, providers, display state, and notifications
 
 [0.1.0]: https://github.com/Fran-cois/vc-funding/releases/tag/v0.1.0
+[0.2.0]: https://github.com/Fran-cois/vc-funding/releases/tag/v0.2.0

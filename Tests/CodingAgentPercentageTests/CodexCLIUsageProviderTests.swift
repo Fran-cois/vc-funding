@@ -30,8 +30,8 @@ struct CodexCLIUsageProviderTests {
     @Test func usesLiveCLIDataWithoutTouchingFallback() async throws {
         let fallback = StubFallbackProvider(result: .failure(UsageProviderError.noUsageData))
         let provider = CodexCLIUsageProvider(
-            fetchRateLimits: {
-                ["primary": ["usedPercent": 12, "windowDurationMins": 300, "resetsAt": 2_000_001_000]]
+            fetchRateLimitsResult: {
+                ["rateLimits": ["primary": ["usedPercent": 12, "windowDurationMins": 300, "resetsAt": 2_000_001_000]]]
             },
             fallback: fallback
         )
@@ -50,7 +50,7 @@ struct CodexCLIUsageProviderTests {
             sourceUpdatedAt: now
         )
         let provider = CodexCLIUsageProvider(
-            fetchRateLimits: { throw CodexAppServerClient.CommunicationError(message: "boom") },
+            fetchRateLimitsResult: { throw CodexAppServerClient.CommunicationError(message: "boom") },
             fallback: StubFallbackProvider(result: .success(fallbackSnapshot))
         )
 
@@ -68,7 +68,7 @@ struct CodexCLIUsageProviderTests {
             sourceUpdatedAt: now
         )
         let provider = CodexCLIUsageProvider(
-            fetchRateLimits: { [:] },
+            fetchRateLimitsResult: { [:] },
             fallback: StubFallbackProvider(result: .success(fallbackSnapshot))
         )
 
@@ -88,9 +88,9 @@ struct CodexCLIUsageProviderTests {
         let cliWasCalled = LockedFlag()
         let provider = CodexCLIUsageProvider(
             isOfflineModeEnabled: { true },
-            fetchRateLimits: {
+            fetchRateLimitsResult: {
                 cliWasCalled.set(true)
-                return ["primary": ["usedPercent": 12, "windowDurationMins": 300, "resetsAt": 2_000_001_000]]
+                return ["rateLimits": ["primary": ["usedPercent": 12, "windowDurationMins": 300, "resetsAt": 2_000_001_000]]]
             },
             fallback: StubFallbackProvider(result: .success(fallbackSnapshot))
         )

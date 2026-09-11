@@ -101,6 +101,10 @@ struct MenuContentView: View {
             let snapshot = store.snapshot(for: selectedAgent)
             if let costUSD = snapshot?.costUSD, snapshot?.fiveHour == nil, snapshot?.weekly == nil {
                 creditsCard(credits: snapshot?.creditsUsed, costUSD: costUSD)
+            } else if let lines = snapshot?.lines, !lines.isEmpty {
+                ForEach(lines) { line in
+                    usageLineCard(line)
+                }
             } else {
                 usageCard("5-hour window", shortTitle: "5h", window: snapshot?.fiveHour)
                 usageCard("Weekly window", shortTitle: "7d", window: snapshot?.weekly)
@@ -179,6 +183,37 @@ struct MenuContentView: View {
         }
         .padding(10)
         .background(.quaternary, in: RoundedRectangle(cornerRadius: 9))
+    }
+
+    private func usageLineCard(_ line: UsageLine) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(line.name)
+                .font(.subheadline.weight(.semibold))
+            HStack(spacing: 10) {
+                usageLineStat("5h", window: line.fiveHour)
+                usageLineStat("7d", window: line.weekly)
+            }
+        }
+        .padding(10)
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 9))
+    }
+
+    private func usageLineStat(_ label: String, window: UsageWindow?) -> some View {
+        HStack(spacing: 4) {
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            if let window {
+                Text("\(window.roundedPercent)%")
+                    .font(.callout.weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(usageColor(window.usedPercent))
+            } else {
+                Text("—")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+        }
     }
 
     private func creditsCard(credits: Int?, costUSD: Double) -> some View {

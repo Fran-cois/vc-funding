@@ -32,7 +32,7 @@
 
 ### Download
 
-Download `vc-funding-0.1.0.zip` from the [latest GitHub release](https://github.com/Fran-cois/vc-funding/releases/latest), move `vc-funding.app` to `/Applications`, and open it.
+Download `vc-funding-0.2.0.zip` from the [latest GitHub release](https://github.com/Fran-cois/vc-funding/releases/latest), move `vc-funding.app` to `/Applications`, and open it.
 
 ### Homebrew
 
@@ -62,6 +62,8 @@ $CODEX_HOME/sessions/**/*.jsonl
 ```
 
 `CODEX_HOME` defaults to `~/.codex`. Aside from that fallback, the app never derives quotas from token counts or calls undocumented endpoints.
+
+When the CLI call succeeds, Codex's dropdown shows every metered limit the backend reports as its own line (e.g. **Codex**, **GPT-5.3-Codex-Spark**, **gpt-reserve**) instead of a single aggregated 5-hour/weekly pair, since separate model or reserve pools can be at very different usage levels. The local-log fallback still only has one line, since jsonl session events don't carry that per-limit breakdown.
 
 The local event schema and the CLI's JSON-RPC protocol are not documented stable public APIs. Missing or expired windows are omitted from the menu bar and explained in the dropdown.
 
