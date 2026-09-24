@@ -62,6 +62,7 @@ enum UsageProviderError: LocalizedError, Equatable {
     case credentialsRejected(String)
     case unlimitedQuota(String)
     case networkRequestFailed(String)
+    case commandOutputUnrecognized(String)
 
     var errorDescription: String? {
         switch self {
@@ -81,6 +82,8 @@ enum UsageProviderError: LocalizedError, Equatable {
             "\(name) is on an unlimited plan, so there is no percentage quota to show."
         case .networkRequestFailed(let name):
             "\(name) usage request failed. Check your network connection and subscription."
+        case .commandOutputUnrecognized(let name):
+            "Couldn't read \(name) usage. Try updating the CLI and make sure you're signed in."
         }
     }
 }

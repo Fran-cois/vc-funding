@@ -32,7 +32,7 @@
 
 ### Download
 
-Download `vc-funding-0.2.0.zip` from the [latest GitHub release](https://github.com/Fran-cois/vc-funding/releases/latest), move `vc-funding.app` to `/Applications`, and open it.
+Download `vc-funding-0.3.0.zip` from the [latest GitHub release](https://github.com/Fran-cois/vc-funding/releases/latest), move `vc-funding.app` to `/Applications`, and open it.
 
 ### Homebrew
 
@@ -71,18 +71,9 @@ If you'd rather vc-funding never run the `codex` CLI at all, enable **No-network
 
 ### How Claude Code data works
 
-Claude Code is visible as a provider tab, but **vc-funding does not collect its usage yet**. The safe integration path is Claude Code's documented [`statusLine` JSON](https://code.claude.com/docs/en/statusline), not its authentication files.
+vc-funding runs the `claude` CLI that's already installed and signed in on your Mac: `claude -p "/usage" --output-format json`. This is Claude Code's own `/usage` command. It runs locally, makes no model request, uses no tokens, and returns the same 5-hour session and weekly percentages (with reset times) that Claude Code shows you. vc-funding reads only those two lines. It never touches OAuth tokens, the Keychain, API keys, transcripts or prompts.
 
-Claude Code sends these fields to a configured local status-line command:
-
-```text
-rate_limits.five_hour.used_percentage
-rate_limits.five_hour.resets_at
-rate_limits.seven_day.used_percentage
-rate_limits.seven_day.resets_at
-```
-
-A future `ClaudeCodeUsageProvider` will read only those four values from a small local cache written by the status-line command. It will not inspect OAuth tokens, API keys, transcripts, prompts, or account details. Until that provider and opt-in setup are implemented, the Claude Code tab intentionally displays **not configured**.
+Apps opened from Finder don't get your shell's `PATH`, so vc-funding also looks for `claude` in `~/.local/bin` (the native installer's location), `/opt/homebrew/bin` and `/usr/local/bin`. If the CLI is missing or signed out, the Claude Code tab stays hidden.
 
 ### How Antigravity data works
 

@@ -12,7 +12,7 @@ struct VCFundingApp: App {
         let tracker = maxedCycleTracker
         _store = StateObject(wrappedValue: UsageStore(providers: [
             CodexCLIUsageProvider(),
-            UnavailableAgentUsageProvider(agentName: CodingAgent.claudeCode.rawValue),
+            ClaudeCLIUsageProvider(),
             UnavailableAgentUsageProvider(agentName: CodingAgent.antigravity.rawValue),
             GitHubCopilotUsageProvider(),
             OpenRouterUsageProvider(),

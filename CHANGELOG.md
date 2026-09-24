@@ -4,6 +4,12 @@ All notable changes to **vc-funding** are documented here. Versions follow [Sema
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-24
+
+### Added
+
+- **Claude Code** usage: 5-hour session and weekly percentages with reset times, read from the `claude` CLI's local `/usage` command (`claude -p "/usage" --output-format json`). This runs locally, uses no tokens and reads no credentials. The app also looks for `claude` in `~/.local/bin`, `/opt/homebrew/bin` and `/usr/local/bin`, because apps opened from Finder don't get your shell's `PATH`.
+
 ### Changed
 
 - The **maxeur de plan max** leaderboard prize now also counts maxed-out weekly (7-day) windows, not just 5-hour ones, so an agent whose weekly quota expires fully used shows up too.

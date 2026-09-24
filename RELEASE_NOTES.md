@@ -1,23 +1,19 @@
-# vc-funding 0.2.0
+# vc-funding 0.3.0
 
-This release makes Codex usage live and detailed: numbers come straight from the `codex` CLI instead of local logs alone, broken down per metered limit.
+This release adds Claude Code usage. You can now watch your Claude Code limits alongside Codex.
 
 ## Highlights
 
-- Codex usage now reads live account rate limits via the `codex` CLI's app-server RPC (`account/rateLimits/read`) — the same source the Codex TUI status line uses — falling back to local session-log parsing only if the CLI call is unavailable.
-- Codex's dropdown shows every metered limit as its own line (e.g. **Codex**, **GPT-5.3-Codex-Spark**, **gpt-reserve**) instead of a single aggregated 5-hour/weekly pair.
-- New off-by-default **No-network mode (Codex)** toggle that skips the CLI call entirely and forces local log parsing, clearly marked "not reliable" in the info panel.
-- Get a clear red warning and one native notification when it is time to switch providers.
-- Get a 🔥 reminder when unused quota is close to resetting.
-- Use, modify, and redistribute the project under the MIT license.
-- Install from a GitHub release archive or a Homebrew Cask once its tap is connected.
+- **Claude Code** tab: 5-hour session and weekly usage percentages with reset times. The numbers come from the `claude` CLI's own `/usage` command. It runs locally, uses no tokens and reads no credentials.
+- The app finds `claude` even when it's installed in `~/.local/bin` (the native installer's location), which apps opened from Finder can't see on their `PATH`.
+- The **maxeur de plan max** leaderboard now also counts maxed-out weekly windows, not just 5-hour ones.
 
 ## Requirements
 
 - macOS 13 or newer
-- The `codex` CLI installed and signed in (recommended), or local Codex session history as a fallback
+- For Codex: the `codex` CLI installed and signed in (recommended), or local Codex session history as a fallback
+- For Claude Code: the `claude` CLI installed and signed in with a Claude subscription
 
 ## Known limitation
 
-Claude Code has a prepared UI tab but no data provider yet. The downloadable development build is ad-hoc signed; production distribution should use Apple Developer ID signing and notarization.
-
+The menu bar label still shows only Codex's numbers. Claude Code usage appears in the dropdown. The downloadable development build is ad-hoc signed; production distribution should use Apple Developer ID signing and notarization.
