@@ -12,7 +12,7 @@ jobs:
   test:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.1.0
       - run: swift test
       - run: ./scripts/build-app.sh
       - run: codesign --verify --deep --strict .build/vc-funding.app
